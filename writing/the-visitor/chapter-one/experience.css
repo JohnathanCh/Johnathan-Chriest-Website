@@ -1,0 +1,49 @@
+/* Welcome copy and on-demand music details. View controls keep their V18 behavior. */
+#arrival{overflow-y:auto;padding-block:max(28px,4vh)}
+.arrival-inner{width:min(500px,100%);margin-block:auto}
+#arrival .experience-intro{max-width:390px;font-size:11px;line-height:1.7;letter-spacing:.04em;text-transform:none;opacity:.78}
+.experience-intro em{font-style:italic}
+.chapter-line>span{font-size:16px;letter-spacing:.045em}
+.arrival-note{font-size:18px;line-height:1.65;margin:28px 0 26px}
+/* Compact modal on both desktop and phones; audio continues when it closes. */
+#listen.panel{inset:0;margin:auto;width:min(480px,calc(100vw - 40px));height:fit-content;max-height:calc(100dvh - 48px);padding:30px;border:1px solid #d4ded2;border-radius:24px;background:#eef0e7;box-shadow:0 24px 90px #071c194d;animation:music-panel-in .18s ease}
+#listen .panel-head{align-items:center;gap:18px}
+#listen .panel-head .eyebrow{margin-bottom:10px;line-height:1.6}
+#listen h2{font-size:36px;line-height:1.1}
+#listen .track-copy{text-align:left}
+#listen .track-copy p{font-size:11px;opacity:.65;line-height:1.6;margin:13px 0 0}
+.track-description{font:17px/1.7 var(--serif);color:#3d5147;margin:22px 0}
+#listen .playback{margin-top:22px;gap:12px;display:grid;grid-template-columns:auto minmax(0,1fr)}
+#listen .playback button{min-height:44px;border-radius:22px}
+#listen .playback input{height:30px;width:100%;min-width:0}
+#listen .playback output{grid-column:2;text-align:right;font-variant-numeric:tabular-nums}
+#listen .sound-settings{margin-top:20px;gap:12px}
+#listen .sound-settings input{height:28px;min-width:0;width:100%}
+#listen .sound-settings button{min-height:40px}
+#listen .audio-note{margin:12px 0 18px}
+#listen .audio-extra{padding-top:16px}
+@keyframes music-panel-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:700px),(pointer:coarse) and (max-width:1100px){
+ #arrival{align-items:flex-start;padding-block:max(28px,env(safe-area-inset-top)) max(28px,env(safe-area-inset-bottom))}
+ #arrival .arrival-inner{max-width:400px;margin:auto}
+ #arrival .experience-intro{font-size:11px;margin-bottom:18px}
+ .chapter-line>span{font-size:14px}
+ .arrival-note{font-size:16px;line-height:1.6;margin:24px 0}
+ #mobile-view-choice>p:first-child{font-size:12px;line-height:1.6}
+ #arrival-motion-status{font-size:11px}
+ .arrival-index{display:none}
+ #listen.panel{inset:auto 12px max(12px,env(safe-area-inset-bottom));margin:0;width:auto;max-height:calc(100dvh - max(28px,env(safe-area-inset-top)) - max(24px,env(safe-area-inset-bottom)));padding:24px;border-radius:24px}
+ #listen h2{font-size:32px}
+ .track-description{font-size:16px}
+ /* Only arrows/swipe mode moves the menu and reduces the player. */
+ body[data-view-control=arrows] #mobile-menu-toggle{top:auto;bottom:calc(28px + env(safe-area-inset-bottom));right:max(16px,env(safe-area-inset-right))}
+ body[data-view-control=arrows] #room-nav{top:auto;bottom:calc(78px + env(safe-area-inset-bottom));right:max(16px,env(safe-area-inset-right));max-height:calc(100dvh - 120px - env(safe-area-inset-top) - env(safe-area-inset-bottom));transform:translateY(4px)}
+ body[data-view-control=arrows][data-mobile-menu=open] #room-nav{transform:none}
+ body[data-view-control=arrows] #mobile-look,body[data-view-control=arrows][data-player-active=true] #mobile-look{bottom:calc(22px + env(safe-area-inset-bottom));left:max(16px,env(safe-area-inset-left))}
+ body[data-view-control=arrows] .music-player{left:auto;right:calc(max(16px,env(safe-area-inset-right)) + 56px);bottom:calc(28px + env(safe-area-inset-bottom));transform:none;display:flex;width:44px;max-width:44px;min-height:44px;padding:0;gap:0;border:0;background:none;box-shadow:none;backdrop-filter:none}
+ body[data-view-control=arrows] .music-player .music-bars,body[data-view-control=arrows] .music-player .player-copy,body[data-view-control=arrows] .music-player .player-progress{display:none}
+ body[data-view-control=arrows] .music-player .player-toggle{flex-basis:44px;width:44px;height:44px;background:#142b2799;border:1px solid #e5ebdc50}
+ body[data-view-control=arrows] #orientation-hint,body[data-view-control=arrows][data-player-active=true] #orientation-hint{bottom:calc(84px + env(safe-area-inset-bottom))}
+ body[data-view-control=arrows] #clear-view,body[data-view-control=arrows][data-player-active=true] #clear-view{bottom:calc(122px + env(safe-area-inset-bottom))}
+ body[data-view-control=arrows] #toast{bottom:calc(86px + env(safe-area-inset-bottom))}
+}

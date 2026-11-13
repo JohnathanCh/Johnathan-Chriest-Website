@@ -1,0 +1,21 @@
+/* Revision 2: one flat slit, tactile focus reveal and restrained cursor parallax. */
+#eyelids div{left:0;width:100%;height:calc(50% * (1 - var(--open)) + 1px);filter:blur(1px)}
+#eyelids div:first-child{top:-1px;border-radius:0}
+#eyelids div:last-child{bottom:-1px;border-radius:0}
+#canvas-host canvas{cursor:default}
+#canvas-host canvas:active{cursor:crosshair}
+#clear-view{position:fixed;left:32px;bottom:72px;z-index:6;background:#132b24c9;color:var(--paper);border:1px solid #f6f4e52e;border-radius:30px;padding:11px 17px;font-size:11px;backdrop-filter:blur(12px)}
+#clear-view span{margin-left:15px}
+#orientation-hint{max-width:calc(100vw - 420px);line-height:1.5}
+@media(max-width:700px){
+ #clear-view{left:50%;transform:translateX(-50%);bottom:132px;white-space:nowrap}
+ #orientation-hint{bottom:103px;left:20px;right:20px;max-width:none;font-size:10px;line-height:1.5}
+}
+/* On phones the lids translate as two opaque planes: no animated filtered height.
+   The supplied Safari screenshot's bands align with the old filtered lid areas. */
+@media (max-width:700px), (pointer:coarse) and (max-width:1100px){
+ #eyelids.mobile-eyelids{isolation:isolate;overflow:hidden}
+ #eyelids.mobile-eyelids div{height:calc(50% + 2px);background:#040a09;filter:none;will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+ #eyelids.mobile-eyelids div:first-child{top:-1px;border-radius:0}
+ #eyelids.mobile-eyelids div:last-child{bottom:-1px;border-radius:0}
+}

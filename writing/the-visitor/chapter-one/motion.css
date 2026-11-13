@@ -1,0 +1,18 @@
+/* These controls belong only to the phone/tablet layout. */
+#mobile-view-choice[hidden],#mobile-look[hidden]{display:none!important}
+@media(max-width:700px),(pointer:coarse) and (max-width:1100px){
+ #arrival{overflow-y:auto}.arrival-inner{margin:auto}
+ .tilt-directions{display:grid;grid-template-columns:1fr 1fr}.tilt-controls>button{min-height:44px}#tilt-status{line-height:1.5}
+ #mobile-view-choice{margin:0 0 20px;font-size:13px;line-height:1.5}#mobile-view-choice>p:first-child{color:#e9e9dd;margin:0 0 12px}
+ .view-choice-buttons{display:flex;gap:10px}.view-choice-buttons button{flex:1;min-height:46px;border:1px solid #e9e9dd70;border-radius:25px;background:#213d35a6;color:#f1f0e5;padding:10px 14px;font:inherit}
+ .view-choice-buttons button[aria-pressed="true"]{background:#ecede2;color:#203c32;border-color:#ecede2}.view-choice-buttons button:disabled{opacity:.5}
+ #arrival-motion-status{font-size:12px;color:#d2d7c8;margin:10px 0 0}#arrival-motion-setup{color:#e9e9dd}
+ #mobile-look{position:fixed;z-index:22;left:16px;bottom:calc(22px + env(safe-area-inset-bottom));display:flex;gap:2px;padding:4px;background:#142b2799;border:1px solid #e5ebdc50;border-radius:28px;backdrop-filter:blur(10px)}
+ #mobile-look button{min-width:46px;min-height:46px;padding:8px 12px;border:0;border-radius:24px;background:transparent;color:#f1f1e5;font:14px system-ui}
+ #mobile-look #view-left,#mobile-look #view-right{font-size:22px}#mobile-look button:active{background:#e9e9dd30}
+ body[data-player-active="true"] #mobile-look{bottom:calc(138px + env(safe-area-inset-bottom))}
+ body[data-view-control="arrows"][data-player-active="true"] #orientation-hint{bottom:calc(211px + env(safe-area-inset-bottom))}
+ body[data-view-control="arrows"][data-player-active="true"] #clear-view{bottom:calc(248px + env(safe-area-inset-bottom))}
+ #mobile-look button:focus-visible,.view-choice-buttons button:focus-visible{outline:2px solid #f1f1e5;outline-offset:3px}
+}
+@media(max-height:500px) and (orientation:landscape){#mobile-view-choice{margin-bottom:10px}#mobile-look{left:18px}body[data-player-active="true"] #mobile-look{bottom:calc(22px + env(safe-area-inset-bottom))}}
