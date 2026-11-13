@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#142b27">
+  <meta name="description" content="Enter the world of The Visitor. An intimate first-person reading and listening experience, from a hospital bed in a humane future.">
+  <title>The Visitor — Chapter One | Johnathan Chriest</title>
+  <link rel="canonical" href="https://johnathanchriest.art/writing/the-visitor/chapter-one/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="The Visitor — Chapter One">
+  <meta property="og:description" content="Wake into The Visitor. Explore the room, listen to the music, and read Chapter One from the character’s perspective.">
+  <meta property="og:url" content="https://johnathanchriest.art/writing/the-visitor/chapter-one/">
+  <meta property="og:image" content="https://johnathanchriest.art/writing/the-visitor/chapter-one/assets/room-poster-v17.webp">
+  <meta property="og:image:alt" content="The Visitor’s turquoise hospital room, seen from the bed.">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Crect width='80' height='80' rx='20' fill='%23142b27'/%3E%3Ctext x='23' y='56' font-family='serif' font-size='52' fill='%23eeeee4'%3EV%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./focus-reveal.css?v=6">
+  <link rel="stylesheet" href="./music-player.css?v=13">
+  <link rel="stylesheet" href="./mobile-ui.css?v=6">
+  <link rel="stylesheet" href="./opening-film.css?v=9">
+  <link rel="stylesheet" href="./motion.css?v=16">
+  <link rel="stylesheet" href="./experience.css?v=21">
+  <style>html,body{background:#000}#startup-black{position:fixed;inset:0;z-index:100;background:#000;color:#dedfd5;display:grid;place-items:center;font:13px system-ui}#startup-black[hidden]{display:none}#startup-black span{opacity:0;animation:loading-label 1s 1.5s forwards}@keyframes loading-label{to{opacity:.7}}#eyelids div{height:calc(50% + 2px)!important;filter:none!important;border-radius:0!important;backface-visibility:hidden;will-change:transform}#eyelids div:first-child{top:-1px}#eyelids div:last-child{bottom:-1px}</style>
+  <script>setTimeout(function(){var e=document.getElementById("startup-black");if(e)e.hidden=true;},35000);</script>
+  <script type="importmap">{"imports":{"three":"./vendor/three.module.js","three/addons/":"./vendor/addons/"}}</script>
+  <script>
+  // This escape does not depend on modules, WebGL or the opening movie.
+  setTimeout(function(){
+    if(document.documentElement.dataset.visitorReady==='true')return;
+    window.visitorStartupTimedOut=true;
+    dispatchEvent(new Event('visitor-startup-timeout'));
+    if(window.visitorPreviewReport)window.visitorPreviewReport('startup-timeout',{stage:'startup',message:'Browser startup exceeded 35 seconds; native image, PDF and audio controls are available.'});
+    var byId=function(id){return document.getElementById(id);};
+    var controls=document.createElement('section');controls.id='startup-fallback-controls';controls.hidden=true;
+    controls.style.cssText='position:fixed;z-index:30;right:20px;bottom:20px;max-width:calc(100vw - 40px);padding:15px 18px;border-radius:20px;background:#142b27ed;color:#f2f1e7;font:14px/1.6 system-ui';
+    controls.innerHTML='<a href="./assets/chapter-one.pdf" target="_blank" rel="noopener" style="color:inherit;margin-right:18px">Read chapter</a><button type="button" style="background:transparent;color:inherit;text-decoration:underline;padding:8px">Retry room</button><details><summary style="cursor:pointer;padding:8px 0">Listen</summary><audio controls preload="none" src="./assets/window-light.m4a" style="max-width:100%"></audio></details>';
+    controls.querySelector('button').onclick=function(){location.reload();};document.body.appendChild(controls);
+    var enter=function(){byId('arrival').hidden=true;byId('poster').hidden=false;byId('canvas-host').hidden=true;byId('markers').hidden=true;byId('eyelids').style.opacity=0;byId('opening-film-layer').hidden=true;byId('room-header').hidden=false;byId('room-nav').hidden=true;byId('music-player').hidden=true;byId('skip-intro').hidden=true;byId('clear-view').hidden=true;byId('orientation-hint').hidden=true;byId('fallback-note').hidden=true;document.body.dataset.phase='exploring';controls.hidden=false;};
+    byId('load-detail').textContent='Simple view ready';byId('load-error').hidden=false;byId('room-error-detail').textContent='startup: The browser did not finish loading the full room in time. Reading and listening remain available.';
+    byId('awaken').disabled=false;byId('awaken').firstElementChild.textContent='Enter the room';byId('awaken').onclick=enter;byId('use-fallback').onclick=enter;byId('retry').onclick=function(){location.reload();};byId('reload-preview').onclick=function(){location.reload();};
+  },35000);
+  </script>
+</head>
+<body data-phase="arrival">
+  <div id="startup-black" hidden aria-label="Opening the room"><span role="status">Preparing the room…</span></div>
+  <main id="environment" aria-label="Hospital room">
+    <img id="poster" src="./assets/room-poster-v17.webp" alt="Soft turquoise hospital room with a courtyard window, plants, warm wood and a bed." fetchpriority="high">
+    <div id="canvas-host"></div>
+    <div id="scene-shade" aria-hidden="true"></div>
+    <div id="opening-film-layer" hidden aria-hidden="true"><video id="opening-film" muted playsinline preload="none" ></video></div>
+    <div id="eyelids" aria-hidden="true"><div></div><div></div></div>
+    <div id="markers" aria-label="Objects in the room"></div>
+    <div id="object-tooltip" role="status" hidden></div>
+  </main>
+
+  <header class="room-header" id="room-header" hidden>
+    <a class="wordmark" href="#" id="title-home" aria-label="Return to bed view">The Visitor</a>
+    <span class="chapter-kicker">I <span>Waking Up</span></span>
+  </header>
+
+  <section id="arrival" aria-labelledby="site-title">
+    <div class="arrival-inner">
+      <p class="eyebrow experience-intro">An immersive experience of the novel, <em>The Visitor</em>, told chapter by chapter.</p>
+      <h1 id="site-title">The Visitor<span class="title-period">.</span></h1>
+      <div class="chapter-line"><span>Chapter One</span><i></i><em>Waking Up</em></div>
+      <p class="arrival-note">Welcome to “The Visitor” immersive experience. You will be waking up with our main character to explore his surroundings from his perspective. For now, his legs have atrophied, so you can only swivel to inspect your surroundings.</p>
+      <section id="mobile-view-choice" aria-label="Choose how to look around" hidden>
+        <p>Enable motion to tilt your phone to look around the room, or use arrows and swiping to do the same.</p>
+        <div class="view-choice-buttons"><button type="button" id="arrival-motion" aria-pressed="false" disabled>Enable motion</button><button type="button" id="arrival-arrows" aria-pressed="true">Use arrows</button></div>
+        <p id="arrival-motion-status" role="status">You can also swipe to look around. Tap Centre to return to the bed view.</p>
+        <a id="arrival-motion-setup" href="./motion-setup.html" hidden>Set up phone motion ↗</a>
+      </section>
+      <button class="awaken" id="awaken" disabled><span>Preparing the room</span><span aria-hidden="true">↗</span></button>
+      <div class="loading-row"><progress id="load-progress" max="100" value="0" aria-label="Essential room assets"></progress><span id="load-detail" role="status">Preparing…</span></div>
+      <p id="preview-report-status" hidden style="font-size:11px;line-height:1.5"></p>
+      <p id="opening-film-status" hidden style="font-size:11px;line-height:1.5"></p>
+      <div id="load-error" hidden><p>The room could not finish loading.</p><button id="retry">Try again</button><button id="reload-preview">Reload preview</button><button id="use-fallback">Enter the simple view</button><details><summary>Loading details</summary><p id="room-error-detail"></p></details></div>
+      <p class="arrival-foot">Headphones welcome. Move at your own pace.</p>
+    </div>
+    <span class="arrival-index" aria-hidden="true">01 / RETURNING</span>
+  </section>
+
+  <button id="skip-intro" class="quiet-pill" hidden>Skip introduction <span aria-hidden="true">→</span></button>
+  <p id="orientation-hint" hidden>Let your eyes adjust…</p>
+  <button id="clear-view" hidden>Clear view <span aria-hidden="true">↗</span></button>
+  <section id="music-player" class="music-player" aria-label="Music player" data-status="paused" hidden>
+    <div class="music-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <button id="player-details" class="player-copy" aria-label="Window Light — open music options">
+      <span id="player-title">Window Light</span>
+      <span id="player-status" role="status">Ready to play</span>
+    </button>
+    <button id="player-toggle" class="player-toggle" aria-label="Play Window Light">
+      <svg class="player-play" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 11 7-11 7z"/></svg>
+      <svg class="player-pause" viewBox="0 0 24 24" aria-hidden="true" hidden><path d="M7 5h4v14H7zm6 0h4v14h-4z"/></svg>
+    </button>
+    <div class="player-progress"><input id="player-seek" type="range" min="0" max="1" step="0.1" value="0" aria-label="Music position" disabled><output id="player-time" for="player-seek">0:00 / 0:00</output></div>
+  </section>
+  <nav id="mobile-look" aria-label="Look around the room" hidden>
+    <button type="button" id="view-left" aria-label="Look left">←</button><button type="button" id="view-center" aria-label="Return to centre view">Centre</button><button type="button" id="view-right" aria-label="Look right">→</button>
+  </nav>
+  <nav id="room-nav" aria-label="Room menu" hidden>
+    <button data-open="reader">Read</button><span aria-hidden="true">/</span>
+    <button id="show-player">Listen</button><span aria-hidden="true">/</span>
+    <button id="sound-toggle" aria-pressed="false">Sound off</button>
+    <button id="menu-open" aria-label="Room options">☰</button>
+  </nav>
+  <div id="fallback-note" hidden><span>The room is shown as a still image. Reading and listening remain available.</span><button id="retry-3d">Retry room view</button></div>
+  <div id="toast" role="status" hidden></div>
+
+  <dialog id="reader" aria-labelledby="reader-title" class="reader panel">
+    <div class="panel-head"><div><p class="eyebrow">The Visitor / Chapter One</p><h2 id="reader-title">Waking Up</h2></div><button class="close-panel" aria-label="Close chapter and return to room">×</button></div>
+    <div class="reader-tools"><span>From the manuscript</span><a href="./assets/chapter-one.pdf" target="_blank" rel="noopener">Open original PDF ↗</a></div>
+    <article id="chapter-text" tabindex="0" aria-label="Chapter One">Loading the chapter…</article>
+    <div class="panel-tail"><button class="close-panel">Return to the room <span aria-hidden="true">↗</span></button></div>
+  </dialog>
+
+  <dialog id="listen" aria-labelledby="listen-title" class="listen panel">
+    <div class="panel-head"><div><p class="eyebrow">Music from The Visitor</p><h2 id="listen-title"><span id="track-title">Window Light</span></h2></div><button class="close-panel" aria-label="Close music and return to room">×</button></div>
+    <div class="track-copy"><p id="track-credit">Instrumental study · Chapter One</p></div>
+    <p id="track-description" class="track-description">A short instrumental study for this first moment of waking. Its role here is to give the room space to breathe and accompany the quiet attention of Chapter One.</p>
+    <div class="playback"><button id="play" aria-label="Play Window Light">Play <span aria-hidden="true">▶</span></button><input id="seek" type="range" min="0" max="51" value="0" step=".1" aria-label="Track position"><output id="track-time">0:00 / 0:51</output></div>
+    <div class="sound-settings"><label for="volume">Volume</label><input type="range" id="volume" min="0" max="1" step=".01" value=".45"><button id="mute" aria-pressed="true">Muted</button></div>
+    <p class="audio-note" id="audio-status" role="status">Sound begins only when you choose it.</p>
+    <details class="audio-extra"><summary>Audio options</summary><p>Window Light is a demo instrumental from the project archive.</p><label class="file-label">Try an audio file <input id="local-audio" type="file" accept="audio/*"></label><label class="narration-note">Narration <span>No recording supplied <input type="checkbox" disabled aria-label="Narration unavailable: no recording supplied"></span></label></details>
+  </dialog>
+
+  <dialog id="options" aria-labelledby="options-title" class="options panel">
+    <div class="panel-head"><div><p class="eyebrow">At your own pace</p><h2 id="options-title">The room</h2></div><button class="close-panel" aria-label="Close room options">×</button></div>
+    <button id="reset-view" class="option-button">Return to the bed view <span>↗</span></button>
+    <button id="replay" class="option-button">Experience the opening again <span>↺</span></button>
+    <label class="option-row">Reduce motion <input type="checkbox" id="reduced-motion"></label>
+    <label class="option-row">Image quality <select id="quality"><option value="auto">Automatic</option><option value="desktop">Detailed</option><option value="mobile">Light</option></select></label>
+    <button id="show-objects" class="option-button">Show things to explore <span>⌖</span></button>
+  </dialog>
+
+  <dialog id="door-panel" aria-labelledby="door-title" class="small-panel panel"><div class="panel-head"><div><p class="eyebrow">Beyond this room</p><h2 id="door-title">A little more time.</h2></div><button class="close-panel" aria-label="Return to room">×</button></div><p>The door has a place in the chapter. This first experience stays with the beginning, here in the bed.</p><button data-open="reader">Continue in the manuscript ↗</button></dialog>
+  <audio id="music" preload="none" playsinline src="./assets/window-light.m4a"></audio>
+  <noscript><div class="no-script"><h2>The Visitor</h2><p>Reading and music are available without the interactive room.</p><a href="./assets/chapter-one.pdf">Read Chapter One</a><a href="./assets/window-light.m4a">Listen to Window Light (project demo)</a></div></noscript>
+  <script type="module" src="./app.js?v=21"></script>
+</body>
+</html>

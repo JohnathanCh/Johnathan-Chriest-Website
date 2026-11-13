@@ -1,0 +1,60 @@
+{
+  "version": 17,
+  "visual": "blender",
+  "source": "Hospital_From_Bed_16K_Master.png",
+  "masterDimensions": [
+    16384,
+    8192
+  ],
+  "bedPitchDegrees": -6,
+  "variants": {
+    "desktop": {
+      "file": "room-desktop-v17.webp",
+      "bytes": 634208,
+      "width": 4096,
+      "height": 2048
+    },
+    "mobile": {
+      "file": "room-mobile-v17.webp",
+      "bytes": 154842,
+      "width": 2048,
+      "height": 1024
+    },
+    "light": {
+      "file": "room-light-v17.webp",
+      "bytes": 36486,
+      "width": 1024,
+      "height": 512
+    }
+  },
+  "tiles": {
+    "levels": [
+      {
+        "width": 4096,
+        "height": 2048,
+        "tileSize": 1024,
+        "gutter": 4
+      },
+      {
+        "width": 8192,
+        "height": 4096,
+        "tileSize": 1024,
+        "gutter": 4
+      },
+      {
+        "width": 16384,
+        "height": 8192,
+        "tileSize": 1024,
+        "gutter": 4
+      }
+    ],
+    "urlTemplate": "./assets/panorama-v17/{level}/{x}_{y}.webp"
+  },
+  "colorManagement": {
+    "display": "sRGB",
+    "view": "AgX",
+    "look": "AgX - Medium High Contrast",
+    "exposure": 0.6499999761581421,
+    "gamma": 1.0
+  }
+}
