@@ -41,6 +41,8 @@ button { font: inherit; cursor: pointer; }
   font-size: clamp(.78rem, 1.15vw, .95rem); font-weight: 700;
 }
 .nav a { padding: 12px 0; white-space: nowrap; }
+.nav .nav-home { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-width: 72px; height: 40px; padding: 0 12px; border: 1px solid #ffffff66; border-radius: 3px; font-size: 12px; letter-spacing: .02em; }
+.nav .nav-home:hover { background: #ffffff14; }
 .nav a:hover { text-decoration: underline; text-underline-offset: 6px; }
 :focus-visible { outline: 2px solid currentColor; outline-offset: 5px; }
 main { padding-top: 84px; }
@@ -133,6 +135,7 @@ body[data-project="eilah"] .artist-bio {
   .site-header .wordmark, .project-toggle { height: 58px; font-size: 1.05rem; }
   .nav { grid-column: 1/-1; grid-row: 2; display: flex; justify-content: center; flex-direction: row; gap: clamp(6px, 2vw, 16px); padding: 0 8px; font-size: clamp(.75rem, 2.1vw, .9rem); }
   .nav a { padding: 12px 0; }
+  .nav .nav-home { position: absolute; top: 7px; left: 50%; transform: translateX(-50%); height: 44px; padding: 0 12px; }
   .artist-bio { padding-top: 32px; padding-bottom: 32px; }
   .bio-copy { width: 58%; }
   .travel-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
