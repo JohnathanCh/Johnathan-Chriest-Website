@@ -18,6 +18,8 @@ Shared styles, scripts, and images remain at the repository root. GitHub Pages n
 
 Edit `index.html` for the homepage wording and its Music/Writing links. Edit `writing/index.html` for the writing introduction and chapter link. Both use `portfolio.css`; music and the immersive chapter keep their separate styles. The homepage is two equal columns on desktop and two stacked panels on phones, with ordinary links and no JavaScript dependency.
 
+The writing page uses the three supplied Chapter One images in `assets/writing/`, encoded as lossless WebP with their original pixels and proportions. It also includes a Chapter Two “Coming soon” section. These preview images are separate from the interactive room's panorama.
+
 ## The Visitor — Chapter One
 
 `/writing/the-visitor/chapter-one/` hosts the approved interactive waking-room experience. GitHub Pages redirects the address without the trailing slash to this directory. It is a standalone page, so its styles and controls are isolated from the music portfolio.
@@ -29,6 +31,8 @@ Edit this page in `writing/the-visitor/chapter-one/`. Preserve its relative asse
 ## Editing music pages
 
 Edit the shared template in `music/index.html` and artist information in `music-projects.mjs`, then run `node scripts/build-music-pages.mjs`. Commit the generated `music/Opris/index.html` and `music/eilah/index.html` along with the source changes.
+
+The shared music header includes a Home button linking to `/`, including a centred position between the artist names on small screens.
 
 ## Publishing
 
