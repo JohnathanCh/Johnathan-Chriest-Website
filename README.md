@@ -4,14 +4,19 @@ Johnathan Chriest’s personal website, hosted on GitHub Pages at https://johnat
 
 ## Routes
 
+- `/`: split landing page introducing Music and Writing.
 - `/music/`: music entry page, initially showing Opris.
 - `/music/Opris/`: Opris’s page.
 - `/music/eilah/`: Eilah’s page.
+- `/writing/`: writing entry page with The Visitor and a link to Chapter One.
 
 The artist names are ordinary links, so direct visits, refresh, new tabs, and browser history work without custom routing.
-- `/`: redirects to `/music/` for now, preserving query parameters and section links when JavaScript is enabled.
 
 Shared styles, scripts, and images remain at the repository root. GitHub Pages normalizes `/music` to `/music/`.
+
+## Editing the landing and writing pages
+
+Edit `index.html` for the homepage wording and its Music/Writing links. Edit `writing/index.html` for the writing introduction and chapter link. Both use `portfolio.css`; music and the immersive chapter keep their separate styles. The homepage is two equal columns on desktop and two stacked panels on phones, with ordinary links and no JavaScript dependency.
 
 ## The Visitor — Chapter One
 
