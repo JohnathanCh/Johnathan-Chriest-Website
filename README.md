@@ -63,3 +63,11 @@ For other updates, stage the specific changed source files instead. Music templa
 For a local preview from the correct repository, run `python3 -B scripts/preview.py --port 8080`, then open http://127.0.0.1:8080/writing/the-visitor/chapter-one/. The server supports seeking audio and refuses requests for private dot-folders. Production HTTPS is the easiest way to test real phone motion; local HTTP supports the arrow/swipe interface. Use a different free port if 8080 is already running the preview.
 
 The current chapter track is `writing/the-visitor/chapter-one/assets/chapter-one-master-2.wav` (displayed as Chapter One - Waking Up; source: Master 2). It is copied exactly from the supplied WAV: no encoding, normalization, EQ or mastering. Browser playback defaults to 100% volume, with an optional listener volume control. `assets/audio-info.json` records its byte hash and duration. For a future track replacement, copy the intended file into assets, update the audio URLs and track title in the chapter index, and update audio-info.json; never run audio processing unless explicitly requested.
+
+## Room navigation and loading
+
+The room remains anchored at the original bed eye position. The viewing range is symmetric at ±105°, reaching the left-wall door even in narrow windows. On desktop, moving toward an edge pans gently; moving back to the middle holds that direction. Return to bed view or Centre restores the neutral view. Phones retain touch/arrow/motion controls with the same bounds. `motion-config.js` contains the adjustable limits and pan speed.
+
+Reduce motion disables automatic camera input and exposes explicit left/Centre/right controls on desktop as well as phones; mouse or touch dragging changes the view directly. The Sound off/on menu action pauses/resumes music; it does not change the track's gain. Read and music callouts are enlarged and appear when their targets overlap the central half of the view.
+
+Room progress counts decoded asset bytes, accounting for compressed HTTP responses. Unknown sizes remain indeterminate; final preparation stays below 100% until the room is ready. Browser test/preview launchers must retain normal Chromium sandbox protection.

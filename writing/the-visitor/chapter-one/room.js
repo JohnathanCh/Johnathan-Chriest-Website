@@ -1,3 +1,4 @@
+import {ResourceProgress} from './loading-progress.js?v=25';
 import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
@@ -5,7 +6,7 @@ import {MeshoptDecoder} from './vendor/meshopt_decoder.mjs';
 import {ClarityVeil} from './clarity.js?v=21';
 import {renderPixelRatio} from './panorama-quality.js?v=18';
 import {PanoramaTiles} from './panorama-tiles.js?v=18';
-import {MOTION} from './motion-config.js?v=16';
+import {MOTION} from './motion-config.js?v=25';
 import {createPanoramaHotspot} from './panorama-hotspots.js?v=21';
 
 const DEG=Math.PI/180;
@@ -29,9 +30,10 @@ export async function createRoom({host,markers,quality,signal,onProgress,onSelec
  const memorySaving=()=>quality==='mobile'||navigator.connection?.saveData||navigator.deviceMemory&&navigator.deviceMemory<4;
  const pixelRatio=()=>renderPixelRatio({dpr:devicePixelRatio||1,width:innerWidth,height:innerHeight,mobile:mobileView.matches,light:memorySaving()});
  renderer.setPixelRatio(pixelRatio());renderer.setSize(innerWidth,innerHeight);host.replaceChildren(renderer.domElement);
- const canvas=renderer.domElement;canvas.tabIndex=-1;canvas.setAttribute('aria-label','View from the bed. Your view comes into focus automatically. Move toward either side for a small glance, use left and right arrows, or drag on touchscreens.');
- const DESKTOP_LIMIT=10*DEG,MOBILE_LIMIT=MOTION.yawLimit*DEG;
+ const canvas=renderer.domElement;canvas.tabIndex=-1;canvas.setAttribute('aria-label','View from the bed. Your view comes into focus automatically. Move toward either edge to look around; move back to the middle to hold your view, use left and right arrows, or drag on touchscreens.');
+ const DESKTOP_LIMIT=MOTION.desktopYawLimit*DEG,MOBILE_LIMIT=MOTION.yawLimit*DEG;
  const lookLimit=()=>mobileView.matches?MOBILE_LIMIT:DESKTOP_LIMIT;
+ let edgeIntent=0;
  let neutralPitch=-6*DEG,controlRevision=0,targetPitch=-6*DEG,yaw=0,targetYaw=0,pitch=-6*DEG,interactive=false,dirty=true,transition,down,hoverID,reducedMotion=false,lastFrame=0,mouseTrail=null;
  onStage('focus effect');clarity=new ClarityVeil(renderer);
  let pano,notebook,guitar,notebookShadow;const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();
@@ -40,22 +42,22 @@ export async function createRoom({host,markers,quality,signal,onProgress,onSelec
  const hemisphere=new THREE.HemisphereLight(0xf6f4e8,0x8e8c72,2.0);scene.add(hemisphere);
  const sun=new THREE.DirectionalLight(0xffebc9,2);sun.position.set(-2,5,-5);scene.add(sun);
  onStage('room lighting');const pmrem=new THREE.PMREMGenerator(renderer),roomEnv=new RoomEnvironment();envTarget=pmrem.fromScene(roomEnv,.04);scene.environment=envTarget.texture;roomEnv.dispose();pmrem.dispose();
- const targets=[];const defs=[{id:'notebook',label:'Read the notebook',anchor:new THREE.Vector3(-.193,-.524,-1.114)},{id:'guitar',label:'Listen · the guitar',anchor:pointAt(52.4*DEG,-10*DEG,6)}];
+ const targets=[];const defs=[{id:'notebook',label:'Read the chapter',anchor:new THREE.Vector3(-.193,-.524,-1.114)},{id:'guitar',label:'Accompanying music',anchor:pointAt(52.4*DEG,-10*DEG,6)}];
  markers.replaceChildren();for(const d of defs){const b=document.createElement('button');b.className='marker';b.setAttribute('aria-label',d.label);b.innerHTML='<span class="label"></span>';b.firstChild.textContent=d.label;b.hidden=true;b.onclick=()=>onSelect(d.id);b.addEventListener('pointerenter',()=>{hoverID=d.id;mouseTrail=null;holdCamera();});b.addEventListener('pointerdown',holdCamera);b.addEventListener('focus',holdCamera);b.addEventListener('pointerleave',()=>{hoverID=null;mouseTrail=null;});markers.append(b);ownedMarkers.push(b);d.element=b;}
- const resourceProgress=new Map();
+ const resourceProgress=new ResourceProgress();
  async function bytes(url,progress=true){
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),30000),cancel=()=>controller.abort();
   signal?.addEventListener('abort',cancel,{once:true});if(signal?.aborted)cancel();
-  function report(loaded,total){resourceProgress.set(url,{loaded,total});if(progress){const all=[...resourceProgress.values()];onProgress(all.reduce((n,r)=>n+r.loaded,0),all.reduce((n,r)=>n+r.total,0));}}
+  function report(loaded,done=false){if(!progress)return;const current=resourceProgress.update(url,loaded,done);onProgress(current.loaded,current.total);}
   try{
    const response=await fetch(url,{signal:controller.signal});if(!response.ok)throw new Error(`${url}: ${response.status}`);
-   const total=Number(response.headers.get('Content-Length'))||0;resourceProgress.set(url,{loaded:0,total});
+   if(progress)resourceProgress.begin(url,Number(response.headers.get('Content-Length')),response.headers.get('Content-Encoding'));
    // Some embedded/mobile fetch implementations expose arrayBuffer without a
    // readable response body. The outer room deadline still covers this branch.
-   if(!response.body?.getReader){const buffer=await response.arrayBuffer();report(buffer.byteLength,total||buffer.byteLength);return buffer;}
+   if(!response.body?.getReader){const buffer=await response.arrayBuffer();report(buffer.byteLength,true);return buffer;}
    const reader=response.body.getReader(),chunks=[];let loaded=0;
-   while(true){const {done,value}=await reader.read();if(done)break;chunks.push(value);loaded+=value.length;report(loaded,total);}
-   const joined=new Uint8Array(loaded);let offset=0;for(const chunk of chunks){joined.set(chunk,offset);offset+=chunk.length;}return joined.buffer;
+   while(true){const {done,value}=await reader.read();if(done)break;chunks.push(value);loaded+=value.length;report(loaded);}
+   const joined=new Uint8Array(loaded);let offset=0;for(const chunk of chunks){joined.set(chunk,offset);offset+=chunk.length;}report(loaded,true);return joined.buffer;
   }finally{clearTimeout(timer);signal?.removeEventListener('abort',cancel);}
  }
  async function textureFrom(buffer){const blob=new Blob([buffer],{type:'image/webp'}),url=URL.createObjectURL(blob);try{const texture=await cancellable(new THREE.TextureLoader().loadAsync(url),texture=>texture.dispose());checkCancelled();texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=Math.min(4,renderer.capabilities.getMaxAnisotropy());return texture;}finally{URL.revokeObjectURL(url);}}
@@ -69,7 +71,7 @@ export async function createRoom({host,markers,quality,signal,onProgress,onSelec
  const angularNotebook=panoramaInfo.hotspots?.notebook,angularGuitar=panoramaInfo.hotspots?.guitar;
  const bakedNotebook=Boolean(angularNotebook)||(panoramaInfo.bakedNotebook===true&&Array.isArray(panoramaInfo.notebookBoundsBlender));
  const expectedSizes=[[panoURL(),panoVariant().bytes],...(bakedNotebook?[]:[['./assets/notebook.glb',43768]]),...(angularGuitar?[]:[['./assets/guitar.glb',256488]])];
- for(const [url,total] of expectedSizes)resourceProgress.set(url,{loaded:0,total});
+ for(const [url,total] of expectedSizes)resourceProgress.register(url,total);
  onStage('room assets');const [panoBytes,notebookBytes,guitarBytes]=await Promise.all([bytes(panoURL()),bakedNotebook?Promise.resolve(null):bytes('./assets/notebook.glb'),angularGuitar?Promise.resolve(null):bytes('./assets/guitar.glb')]);
  checkCancelled();
  onStage('room image');const texture=await textureFrom(panoBytes),geometry=new THREE.SphereGeometry(40,80,40);geometry.scale(-1,1,1);
@@ -108,25 +110,30 @@ export async function createRoom({host,markers,quality,signal,onProgress,onSelec
  guitar.userData.interaction='guitar';guitar.traverse(o=>{if(o.isMesh){o.userData.interaction='guitar';const mats=Array.isArray(o.material)?o.material:[o.material];for(const m of mats)m.visible=false;}});targets.push(guitar);
  // Only the notebook and guitar navigate. The window is part of the view, with no zoom/focus target.
  function look(){camera.position.set(0,0,0);camera.rotation.set(pitch,yaw,0,'YXZ');camera.updateMatrixWorld();}
- function markerPositions(){camera.updateMatrixWorld();for(const d of defs){const p=d.anchor.clone().project(camera),x=(p.x+1)*innerWidth/2,y=(1-p.y)*innerHeight/2;const visible=interactive&&p.z>-1&&p.z<1&&Math.abs(p.x)<.96&&p.y>-.82&&p.y<.8&&clarity.at(x,y)>.65;d.element.hidden=!visible;if(visible){d.element.style.left=`${(p.x+1)*50}%`;d.element.style.top=`${(1-p.y)*50}%`;}}}
+ function markerPositions(){camera.updateMatrixWorld();for(const d of defs){const p=d.anchor.clone().project(camera),x=(p.x+1)*innerWidth/2,y=(1-p.y)*innerHeight/2;const visible=interactive&&p.z>-1&&p.z<1&&Math.abs(p.x)<.96&&p.y>-.82&&p.y<.8&&clarity.at(x,y)>.65;d.element.hidden=!visible;d.element.classList.toggle('is-central',visible&&x+d.element.offsetWidth/2>=innerWidth*.25&&x-d.element.offsetWidth/2<=innerWidth*.75);if(visible){d.element.style.left=`${(p.x+1)*50}%`;d.element.style.top=`${(1-p.y)*50}%`;const label=d.element.querySelector('.label'),half=label.getBoundingClientRect().width/2,center=THREE.MathUtils.clamp(x,16+half,innerWidth-16-half);d.element.style.setProperty('--label-shift',`${center-x}px`);}}}
  function render(now){frame=null;if(disposed)return;const dt=lastFrame?Math.min(.05,(now-lastFrame)/1000):1/60;lastFrame=now;
   if(transition){const f=Math.min(1,(now-transition.start)/transition.duration),s=f*f*(3-2*f);yaw=THREE.MathUtils.lerp(transition.fromYaw,transition.toYaw,s);if(mobileView.matches)pitch=THREE.MathUtils.lerp(transition.fromPitch??pitch,neutralPitch,s);camera.fov=THREE.MathUtils.lerp(transition.fromFov,transition.toFov,s);camera.updateProjectionMatrix();look();if(f===1)transition=null;dirty=true;}
+  let edgePanning=false;
+  if(interactive&&!mobileView.matches&&!reducedMotion&&!down&&!transition&&edgeIntent){
+   const next=THREE.MathUtils.clamp(targetYaw+edgeIntent*MOTION.desktopPanDegreesPerSecond*DEG*dt,-DESKTOP_LIMIT,DESKTOP_LIMIT);
+   edgePanning=Math.abs(next-targetYaw)>.000001;targetYaw=next;
+  }
   let easing=false;if(interactive&&!down&&!transition&&Math.abs(targetYaw-yaw)>.0001){yaw=THREE.MathUtils.lerp(yaw,targetYaw,1-Math.exp(-dt*6));if(Math.abs(targetYaw-yaw)<.0001)yaw=targetYaw;else easing=true;look();dirty=true;}
   if(interactive&&!down&&!transition&&Math.abs(targetPitch-pitch)>.0001){pitch=THREE.MathUtils.lerp(pitch,targetPitch,1-Math.exp(-dt*6));if(Math.abs(targetPitch-pitch)<.0001)pitch=targetPitch;else easing=true;look();dirty=true;}
   const tileAnimating=tiles?.update(now)===true;let focusing=false;if(focusStart&&clarity.active){const f=Math.min(1,(now-focusStart)/focusDuration);clarity.setFocus(1-f*f*(3-2*f));if(f>=1){focusStart=0;clarity.clear();onClarityChange(1);}else focusing=true;dirty=true;}if(tileAnimating)dirty=true;
-  if(dirty){const t=performance.now();renderer.info.autoReset=false;renderer.info.reset();clarity.render(scene,camera);stats.renderMs.push(performance.now()-t);if(stats.renderMs.length>300)stats.renderMs.shift();stats.renderedFrames++;stats.drawCalls=renderer.info.render.calls;stats.triangles=renderer.info.render.triangles;stats.textureCount=renderer.info.memory.textures;markerPositions();dirty=false;}if(transition||easing||tileAnimating||focusing)invalidate();}
+  if(dirty){const t=performance.now();renderer.info.autoReset=false;renderer.info.reset();clarity.render(scene,camera);stats.renderMs.push(performance.now()-t);if(stats.renderMs.length>300)stats.renderMs.shift();stats.renderedFrames++;stats.drawCalls=renderer.info.render.calls;stats.triangles=renderer.info.render.triangles;stats.textureCount=renderer.info.memory.textures;markerPositions();dirty=false;}if(transition||easing||tileAnimating||focusing||edgePanning)invalidate();}
  function invalidate(){dirty=true;if(!frame&&!disposed)frame=requestAnimationFrame(render);}
- function setYaw(value){yaw=targetYaw=THREE.MathUtils.clamp(value,-lookLimit(),lookLimit());transition=null;look();invalidate();}
- function setMobileLook(y,p,{immediate=false,automatic=false}={}){if(!mobileView.matches||![y,p].every(Number.isFinite)||automatic&&(!interactive||reducedMotion||down))return false;transition=null;targetYaw=THREE.MathUtils.clamp(y*DEG,-MOBILE_LIMIT,MOBILE_LIMIT);targetPitch=neutralPitch+THREE.MathUtils.clamp(p,-MOTION.pitchLimit,MOTION.pitchLimit)*DEG;if(!automatic)controlRevision++;if(immediate){yaw=targetYaw;pitch=targetPitch;look();}invalidate();return true;}
+ function setYaw(value){edgeIntent=0;yaw=targetYaw=THREE.MathUtils.clamp(value,-lookLimit(),lookLimit());transition=null;look();invalidate();}
+ function setMobileLook(y,p,{immediate=false,automatic=false}={}){if(!(mobileView.matches||reducedMotion)||![y,p].every(Number.isFinite)||automatic&&(!interactive||reducedMotion||down))return false;transition=null;targetYaw=THREE.MathUtils.clamp(y*DEG,-MOBILE_LIMIT,MOBILE_LIMIT);targetPitch=neutralPitch+THREE.MathUtils.clamp(p,-MOTION.pitchLimit,MOTION.pitchLimit)*DEG;if(!automatic)controlRevision++;if(immediate){yaw=targetYaw;pitch=targetPitch;look();}invalidate();return true;}
  function setLookOffset(value,options={}){return setMobileLook(value,(targetPitch-neutralPitch)/DEG,options);}
- function holdCamera(){targetYaw=yaw;targetPitch=pitch;transition=null;}
+ function holdCamera(){edgeIntent=0;targetYaw=yaw;targetPitch=pitch;transition=null;}
  function reportClaritySoon(){if(clarityReportTimer)return;clarityReportTimer=setTimeout(()=>{clarityReportTimer=null;if(disposed)return;onClarityChange(clarity.measure());invalidate();},120);}
- function pointerParallax(x){if(reducedMotion||mobileView.matches)return;const normalized=THREE.MathUtils.clamp(x/innerWidth*2-1,-1,1),edge=Math.max(0,Math.abs(normalized)-.28)/.72;targetYaw=-Math.sign(normalized)*edge*DESKTOP_LIMIT;invalidate();}
+ function pointerParallax(x){if(reducedMotion||mobileView.matches)return;const normalized=THREE.MathUtils.clamp(x/innerWidth*2-1,-1,1),edge=Math.max(0,Math.abs(normalized)-MOTION.desktopEdgeStart)/(1-MOTION.desktopEdgeStart);if(edge===0){holdCamera();return;}edgeIntent=-Math.sign(normalized)*edge;invalidate();}
  function hit(e){const r=canvas.getBoundingClientRect();pointer.set((e.clientX-r.left)/r.width*2-1,1-(e.clientY-r.top)/r.height*2);raycaster.setFromCamera(pointer,camera);const hits=raycaster.intersectObjects(targets,true);for(const hit of hits){let o=hit.object;while(o){const id=o.userData.interaction;if(id)return {id:id==='music'?'guitar':id==='chapter'?'notebook':id,object:hit.object};o=o.parent;}}return null;}
- function pointerDown(e){if(!interactive||e.button>0)return;canvas.focus({preventScroll:true});holdCamera();const selection=clarity.at(e.clientX,e.clientY)>.65?hit(e)?.id:null;down={x:e.clientX,y:e.clientY,lastX:e.clientX,lastY:e.clientY,touch:e.pointerType==='touch',moved:false,selection};canvas.setPointerCapture(e.pointerId);}
+ function pointerDown(e){if(!interactive||e.button>0)return;canvas.focus({preventScroll:true});holdCamera();const selection=clarity.at(e.clientX,e.clientY)>.65?hit(e)?.id:null;down={x:e.clientX,y:e.clientY,lastX:e.clientX,lastY:e.clientY,touch:e.pointerType==='touch',manual:mobileView.matches||reducedMotion,moved:false,selection};canvas.setPointerCapture(e.pointerId);}
  function pointerMove(e){
   if(!interactive)return;
-  if(down){const from={x:down.lastX,y:down.lastY};if(Math.hypot(e.clientX-down.x,e.clientY-down.y)>4)down.moved=true;if(down.moved){if(down.touch&&mobileView.matches){setMobileLook(targetYaw/DEG+(e.clientX-down.lastX)*.12,(targetPitch-neutralPitch)/DEG-(e.clientY-down.lastY)*.10);down.selection=null;}clarity.brush(from,{x:e.clientX,y:e.clientY});reportClaritySoon();invalidate();}down.lastX=e.clientX;down.lastY=e.clientY;mouseTrail=null;return;}
+  if(down){const from={x:down.lastX,y:down.lastY};if(Math.hypot(e.clientX-down.x,e.clientY-down.y)>4)down.moved=true;if(down.moved){if(down.manual){setMobileLook(targetYaw/DEG+(e.clientX-down.lastX)*.12,(targetPitch-neutralPitch)/DEG-(e.clientY-down.lastY)*.10,{immediate:true});down.selection=null;}clarity.brush(from,{x:e.clientX,y:e.clientY});reportClaritySoon();invalidate();}down.lastX=e.clientX;down.lastY=e.clientY;mouseTrail=null;return;}
   if(e.pointerType==='mouse'&&e.buttons===0){
    const current={x:e.clientX,y:e.clientY};
    if(clarity.active){clarity.brush(mouseTrail||current,current);reportClaritySoon();invalidate();}
@@ -143,20 +150,20 @@ export async function createRoom({host,markers,quality,signal,onProgress,onSelec
  }
  canvas.addEventListener('pointerdown',pointerDown);canvas.addEventListener('pointermove',pointerMove);canvas.addEventListener('pointerup',pointerUp);canvas.addEventListener('pointercancel',()=>down=null);canvas.addEventListener('lostpointercapture',()=>down=null);
  // The overlay labels share this scene. Leaving the canvas for one must not recenter it.
- canvas.addEventListener('pointerleave',()=>{mouseTrail=null;});
+ canvas.addEventListener('pointerleave',()=>{mouseTrail=null;holdCamera();});
  canvas.addEventListener('keydown',e=>{if(!interactive)return;if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();setYaw(yaw+(e.key==='ArrowLeft'?1:-1)*2*DEG);}if(e.key==='Home'){e.preventDefault();api.reset(true);}if(e.code==='Space'&&clarity.active){e.preventDefault();api.clearView();}});
  canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();if(disposed)return;stats.failures.push('WebGL context lost');onFailure('WebGL context lost');});
- function resize(){if(innerWidth<1||innerHeight<1)return;renderer.setPixelRatio(pixelRatio());renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;if(!mobileView.matches)pitch=targetPitch=neutralPitch;camera.updateProjectionMatrix();yaw=THREE.MathUtils.clamp(yaw,-lookLimit(),lookLimit());targetYaw=THREE.MathUtils.clamp(targetYaw,-lookLimit(),lookLimit());look();clarity.resize();invalidate();}
+ function resize(){edgeIntent=0;if(innerWidth<1||innerHeight<1)return;renderer.setPixelRatio(pixelRatio());renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;if(!mobileView.matches&&!reducedMotion)pitch=targetPitch=neutralPitch;camera.updateProjectionMatrix();yaw=THREE.MathUtils.clamp(yaw,-lookLimit(),lookLimit());targetYaw=THREE.MathUtils.clamp(targetYaw,-lookLimit(),lookLimit());look();clarity.resize();invalidate();}
  addEventListener('resize',resize);removeResize=()=>removeEventListener('resize',resize);look();invalidate();
- const api={stats,setYaw,setLookOffset,setMobileLook,holdView:holdCamera,snapshot:()=>({yaw,targetYaw,hoverTarget:hoverID||null,pitch,targetPitch,neutralPitch,controlRevision,dragging:Boolean(down),mode:'rendered',bakedNotebook,notebookProxy:bakedNotebook&&notebook?.isMesh===true,fov:camera.fov,position:camera.position.toArray(),quaternion:camera.quaternion.toArray(),blurred:clarity.active,revealProgress:clarity.progress,parallaxLimitDegrees:mobileView.matches?MOTION.yawLimit:10}),
+ const api={stats,setYaw,setLookOffset,setMobileLook,holdView:holdCamera,snapshot:()=>({yaw,targetYaw,hoverTarget:hoverID||null,pitch,targetPitch,neutralPitch,controlRevision,dragging:Boolean(down),mode:'rendered',bakedNotebook,notebookProxy:bakedNotebook&&notebook?.isMesh===true,fov:camera.fov,position:camera.position.toArray(),quaternion:camera.quaternion.toArray(),blurred:clarity.active,revealProgress:clarity.progress,parallaxLimitDegrees:mobileView.matches?MOTION.yawLimit:MOTION.desktopYawLimit}),
   displayInfo:()=>({viewport:[innerWidth,innerHeight],devicePixelRatio,renderPixelRatio:renderer.getPixelRatio(),buffer:renderer.getDrawingBufferSize(new THREE.Vector2()).toArray(),image:[pano.material.map.image.width,pano.material.map.image.height],asset:loadedAsset,visual:panoramaInfo.visual||'blender',tiles:tiles?.snapshot()||null,blurStrength:clarity.active?clarity.strength:0,maxTextureSize:renderer.capabilities.maxTextureSize,verticalFov:camera.fov,horizontalFov:2*Math.atan(Math.tan(camera.fov*DEG/2)*camera.aspect)/DEG}),
   setInteractive(value){interactive=value;holdCamera();mouseTrail=null;canvas.tabIndex=value?0:-1;markerPositions();},
-  setReducedMotion(value){reducedMotion=value;targetYaw=yaw;},
+  setReducedMotion(value){reducedMotion=value;holdCamera();},
   recoverFocus(duration=3200){focusStart=performance.now();focusDuration=duration;invalidate();},
   resetClarity(){focusStart=0;mouseTrail=null;clarity.reset();onClarityChange(0);invalidate();},
   clearView(){focusStart=0;clarity.clear();onClarityChange(1);invalidate();},
   setExposure(value){if(pano)pano.material.color.setScalar(value);tiles?.setExposure(value);invalidate();},
-  reset(immediate=false){targetYaw=0;targetPitch=neutralPitch;controlRevision++;if(immediate)pitch=neutralPitch;if(immediate){camera.fov=67;camera.updateProjectionMatrix();setYaw(0);}else{transition={fromYaw:yaw,fromPitch:pitch,toYaw:0,fromFov:camera.fov,toFov:67,start:performance.now(),duration:650};invalidate();}},
+  reset(immediate=false){edgeIntent=0;targetYaw=0;targetPitch=neutralPitch;controlRevision++;if(immediate)pitch=neutralPitch;if(immediate){camera.fov=67;camera.updateProjectionMatrix();setYaw(0);}else{transition={fromYaw:yaw,fromPitch:pitch,toYaw:0,fromFov:camera.fov,toFov:67,start:performance.now(),duration:650};invalidate();}},
   revealObjects(ms=5000){for(const d of defs)d.element.classList.add('reveal');setTimeout(()=>{for(const d of defs)d.element.classList.remove('reveal');},ms);},
   async setQuality(value){
    const revision=++qualityRevision;quality=value;const url=panoURL();

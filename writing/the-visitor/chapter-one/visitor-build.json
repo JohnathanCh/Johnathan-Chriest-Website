@@ -1,6 +1,6 @@
 {
   "id": "visitor-chapter-one",
-  "version": 24,
+  "version": 25,
   "visual": "blender",
   "masterDimensions": [
     16384,
@@ -22,5 +22,10 @@
     "encoding": "PCM WAV",
     "processing": "None; source and deployed file must have the same SHA-256.",
     "sourceVersion": "Master 2"
-  }
+  },
+  "loading": "Decoded-byte progress accounts for HTTP compression; preparation stays below 100% until ready.",
+  "viewingRangeDegrees": 105,
+  "desktopControls": "Edge panning; centre holds view. Reduced motion offers drag and arrows.",
+  "objectCallouts": "Enlarged clickable labels appear over objects overlapping the middle half of the viewport.",
+  "soundMenu": "Pause/resume playback; Audio options section removed."
 }

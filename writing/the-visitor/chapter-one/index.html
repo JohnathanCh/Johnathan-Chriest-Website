@@ -21,8 +21,8 @@
   <link rel="stylesheet" href="./mobile-ui.css?v=6">
   <link rel="stylesheet" href="./opening-film.css?v=9">
   <link rel="stylesheet" href="./motion.css?v=16">
-  <link rel="stylesheet" href="./experience.css?v=21">
-  <link rel="stylesheet" href="./controls.css?v=24">
+  <link rel="stylesheet" href="./experience.css?v=25">
+  <link rel="stylesheet" href="./controls.css?v=25">
   <style>html,body{background:#000}#startup-black{position:fixed;inset:0;z-index:100;background:#000;color:#dedfd5;display:grid;place-items:center;font:13px system-ui}#startup-black[hidden]{display:none}#startup-black span{opacity:0;animation:loading-label 1s 1.5s forwards}@keyframes loading-label{to{opacity:.7}}#eyelids div{height:calc(50% + 2px)!important;filter:none!important;border-radius:0!important;backface-visibility:hidden;will-change:transform}#eyelids div:first-child{top:-1px}#eyelids div:last-child{bottom:-1px}</style>
   <script>setTimeout(function(){var e=document.getElementById("startup-black");if(e)e.hidden=true;},35000);</script>
   <script type="importmap">{"imports":{"three":"./vendor/three.module.js","three/addons/":"./vendor/addons/"}}</script>
@@ -57,16 +57,27 @@
   </main>
 
   <header class="room-header" id="room-header" hidden>
-    <a class="wordmark" href="#" id="title-home" aria-label="Return to bed view">The Visitor</a>
+    <div class="room-brand">
+      <a class="wordmark" href="#" id="title-home" aria-label="Return to bed view">The Visitor</a>
+      <a class="return-project" href="/writing/">Return to The Visitor home</a>
+    </div>
     <span class="chapter-kicker">I <span>Waking Up</span></span>
   </header>
 
   <section id="arrival" aria-labelledby="site-title">
     <div class="arrival-inner">
       <p class="eyebrow experience-intro">An immersive experience of the novel, <em>The Visitor</em>, told chapter by chapter.</p>
-      <h1 id="site-title">The Visitor<span class="title-period">.</span></h1>
+      <div class="arrival-title-row">
+        <h1 id="site-title">The Visitor<span class="title-period">.</span></h1>
+        <a class="return-project" href="/writing/">Return to The Visitor home</a>
+      </div>
       <div class="chapter-line" aria-label="Chapter One - Waking Up"><span>Chapter One</span><i></i><em>Waking Up</em></div>
-      <p class="arrival-note">Welcome to “The Visitor” immersive experience. You will be waking up with our main character to explore his surroundings from his perspective. For now, his legs have atrophied, so you can only swivel to inspect your surroundings.</p>
+      <div class="arrival-note" id="welcome-copy">
+        <p>Welcome to “The Visitor”, an immersive sci-fi experience.</p>
+        <p>Our main character is waking from a coma, his body weakened by atrophy. For now, you can only turn your head to look around the room.</p>
+        <p>You’ll find Chapter One in the notebook on the bed and music to accompany your reading if you click the guitar or choose "Listen" in the menu.</p>
+        <p>Thanks for stopping by.</p>
+      </div>
       <section id="mobile-view-choice" aria-label="Choose how to look around" hidden>
         <p>Enable motion to tilt your phone to look around the room, or use arrows and swiping to do the same.</p>
         <div class="view-choice-buttons"><button type="button" id="arrival-motion" aria-pressed="false" disabled>Enable motion</button><button type="button" id="arrival-arrows" aria-pressed="true">Use arrows</button></div>
@@ -104,7 +115,7 @@
   <nav id="room-nav" aria-label="Room menu" hidden>
     <button data-open="reader">Read</button><span aria-hidden="true">/</span>
     <button id="show-player">Listen</button><span aria-hidden="true">/</span>
-    <button id="sound-toggle" aria-pressed="false">Sound off</button>
+    <button id="sound-toggle" aria-pressed="false" aria-label="Play music">Sound on</button>
     <button id="menu-open" aria-label="Room options"><svg class="ui-icon " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 7h14M5 12h14M5 17h14"/></svg></button>
   </nav>
   <div id="fallback-note" hidden><span>The room is shown as a still image. Reading and listening remain available.</span><button id="retry-3d">Retry room view</button></div>
@@ -124,7 +135,6 @@
     <div class="playback"><button id="play" aria-label="Play Chapter One - Waking Up">Play <span aria-hidden="true"><svg class="ui-icon " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m8 5 11 7-11 7Z"/></svg></span></button><input id="seek" type="range" min="0" max="181" value="0" step=".1" aria-label="Track position"><output id="track-time">0:00 / 3:01</output></div>
     <div class="sound-settings"><label for="volume">Volume</label><input type="range" id="volume" min="0" max="1" step=".01" value="1"><button id="mute" aria-pressed="true">Muted</button></div>
     <p class="audio-note" id="audio-status" role="status">Sound begins only when you choose it.</p>
-    <details class="audio-extra"><summary>Audio options</summary><label class="file-label">Try an audio file <input id="local-audio" type="file" accept="audio/*"></label><label class="narration-note">Narration <span>No recording supplied <input type="checkbox" disabled aria-label="Narration unavailable: no recording supplied"></span></label></details>
   </dialog>
 
   <dialog id="options" aria-labelledby="options-title" class="options panel">
@@ -139,6 +149,6 @@
   <dialog id="door-panel" aria-labelledby="door-title" class="small-panel panel"><div class="panel-head"><div><p class="eyebrow">Beyond this room</p><h2 id="door-title">A little more time.</h2></div><button class="close-panel" aria-label="Return to room"><svg class="ui-icon " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><p>The door has a place in the chapter. This first experience stays with the beginning, here in the bed.</p><button data-open="reader">Continue in the manuscript <svg class="ui-icon " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 18 18 6M7 6h11v11"/></svg></button></dialog>
   <audio id="music" preload="none" playsinline src="./assets/chapter-one-master-2.wav"></audio>
   <noscript><div class="no-script"><h2>The Visitor</h2><p>Reading and music are available without the interactive room.</p><a href="./assets/chapter-one.pdf?v=e7184550784a">Read Chapter One</a><a href="./assets/chapter-one-master-2.wav">Listen to Chapter One - Waking Up</a></div></noscript>
-  <script type="module" src="./app.js?v=24"></script>
+  <script type="module" src="./app.js?v=25"></script>
 </body>
 </html>
