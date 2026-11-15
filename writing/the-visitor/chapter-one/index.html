@@ -22,7 +22,7 @@
   <link rel="stylesheet" href="./opening-film.css?v=9">
   <link rel="stylesheet" href="./motion.css?v=16">
   <link rel="stylesheet" href="./experience.css?v=21">
-  <link rel="stylesheet" href="./controls.css?v=23">
+  <link rel="stylesheet" href="./controls.css?v=24">
   <style>html,body{background:#000}#startup-black{position:fixed;inset:0;z-index:100;background:#000;color:#dedfd5;display:grid;place-items:center;font:13px system-ui}#startup-black[hidden]{display:none}#startup-black span{opacity:0;animation:loading-label 1s 1.5s forwards}@keyframes loading-label{to{opacity:.7}}#eyelids div{height:calc(50% + 2px)!important;filter:none!important;border-radius:0!important;backface-visibility:hidden;will-change:transform}#eyelids div:first-child{top:-1px}#eyelids div:last-child{bottom:-1px}</style>
   <script>setTimeout(function(){var e=document.getElementById("startup-black");if(e)e.hidden=true;},35000);</script>
   <script type="importmap">{"imports":{"three":"./vendor/three.module.js","three/addons/":"./vendor/addons/"}}</script>
@@ -36,7 +36,7 @@
     var byId=function(id){return document.getElementById(id);};
     var controls=document.createElement('section');controls.id='startup-fallback-controls';controls.hidden=true;
     controls.style.cssText='position:fixed;z-index:30;right:20px;bottom:20px;max-width:calc(100vw - 40px);padding:15px 18px;border-radius:20px;background:#142b27ed;color:#f2f1e7;font:14px/1.6 system-ui';
-    controls.innerHTML='<a href="./assets/chapter-one.pdf?v=e7184550784a" target="_blank" rel="noopener" style="color:inherit;margin-right:18px">Read chapter</a><button type="button" style="background:transparent;color:inherit;text-decoration:underline;padding:8px">Retry room</button><details><summary style="cursor:pointer;padding:8px 0">Listen</summary><div class="startup-audio"><audio preload="none" src="./assets/chapter-one-mix-1.wav"></audio><button type="button" class="fallback-play">Play music</button><input type="range" min="0" max="1" step="0.1" value="0" disabled aria-label="Music position"></div></details>';
+    controls.innerHTML='<a href="./assets/chapter-one.pdf?v=e7184550784a" target="_blank" rel="noopener" style="color:inherit;margin-right:18px">Read chapter</a><button type="button" style="background:transparent;color:inherit;text-decoration:underline;padding:8px">Retry room</button><details><summary style="cursor:pointer;padding:8px 0">Listen</summary><div class="startup-audio"><audio preload="none" src="./assets/chapter-one-master-2.wav"></audio><button type="button" class="fallback-play">Play music</button><input type="range" min="0" max="1" step="0.1" value="0" disabled aria-label="Music position"></div></details>';
     controls.querySelector('button').onclick=function(){location.reload();};document.body.appendChild(controls);var audio=controls.querySelector('audio'),play=controls.querySelector('.fallback-play'),seek=controls.querySelector('input');play.onclick=function(){if(audio.paused){audio.play().catch(function(){play.textContent='Retry music';});}else audio.pause();};audio.onplay=function(){play.textContent='Pause music';};audio.onpause=function(){play.textContent='Play music';};audio.onloadedmetadata=function(){seek.max=audio.duration;seek.disabled=false;};audio.ontimeupdate=function(){seek.value=audio.currentTime;};seek.oninput=function(){audio.currentTime=Number(seek.value);};
     var enter=function(){byId('arrival').hidden=true;byId('poster').hidden=false;byId('canvas-host').hidden=true;byId('markers').hidden=true;byId('eyelids').style.opacity=0;byId('opening-film-layer').hidden=true;byId('room-header').hidden=false;byId('room-nav').hidden=true;byId('music-player').hidden=true;byId('skip-intro').hidden=true;byId('clear-view').hidden=true;byId('orientation-hint').hidden=true;byId('fallback-note').hidden=true;document.body.dataset.phase='exploring';controls.hidden=false;};
     byId('load-detail').textContent='Simple view ready';byId('load-error').hidden=false;byId('room-error-detail').textContent='startup: The browser did not finish loading the full room in time. Reading and listening remain available.';
@@ -88,11 +88,11 @@
   <button id="clear-view" hidden>Clear view <span aria-hidden="true"><svg class="ui-icon " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 18 18 6M7 6h11v11"/></svg></span></button>
   <section id="music-player" class="music-player" aria-label="Music player" data-status="paused" hidden>
     <div class="music-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-    <button id="player-details" class="player-copy" aria-label="Chapter 1 - Mix 1 — open music options">
-      <span id="player-title">Chapter 1 - Mix 1</span>
+    <button id="player-details" class="player-copy" aria-label="Chapter One - Waking Up — open music options">
+      <span id="player-title">Chapter One - Waking Up</span>
       <span id="player-status" role="status">Ready to play</span>
     </button>
-    <button id="player-toggle" class="player-toggle" aria-label="Play Chapter 1 - Mix 1">
+    <button id="player-toggle" class="player-toggle" aria-label="Play Chapter One - Waking Up">
       <svg class="player-play ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7Z"/></svg>
       <svg class="player-pause ui-icon" viewBox="0 0 24 24" aria-hidden="true" hidden><path d="M8 5v14M16 5v14"/></svg>
     </button>
@@ -118,13 +118,13 @@
   </dialog>
 
   <dialog id="listen" aria-labelledby="listen-title" class="listen panel">
-    <div class="panel-head"><div><p class="eyebrow">Music from The Visitor</p><h2 id="listen-title"><span id="track-title">Chapter 1 - Mix 1</span></h2></div><button class="close-panel" aria-label="Close music and return to room"><svg class="ui-icon " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
-    <div class="track-copy"><p id="track-credit">Chapter One · 2:45</p></div>
-    <p id="track-description" class="track-description">The current mix for Chapter One - Waking Up.</p>
-    <div class="playback"><button id="play" aria-label="Play Chapter 1 - Mix 1">Play <span aria-hidden="true"><svg class="ui-icon " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m8 5 11 7-11 7Z"/></svg></span></button><input id="seek" type="range" min="0" max="165" value="0" step=".1" aria-label="Track position"><output id="track-time">0:00 / 2:45</output></div>
+    <div class="panel-head"><div><p class="eyebrow">Music from The Visitor</p><h2 id="listen-title"><span id="track-title">Chapter One - Waking Up</span></h2></div><button class="close-panel" aria-label="Close music and return to room"><svg class="ui-icon " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+    <div class="track-copy"><p id="track-credit">Chapter One · 3:01</p></div>
+    <p id="track-description" class="track-description music-listening-note">Be patient, the song is quiet in the beginning.</p>
+    <div class="playback"><button id="play" aria-label="Play Chapter One - Waking Up">Play <span aria-hidden="true"><svg class="ui-icon " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m8 5 11 7-11 7Z"/></svg></span></button><input id="seek" type="range" min="0" max="181" value="0" step=".1" aria-label="Track position"><output id="track-time">0:00 / 3:01</output></div>
     <div class="sound-settings"><label for="volume">Volume</label><input type="range" id="volume" min="0" max="1" step=".01" value="1"><button id="mute" aria-pressed="true">Muted</button></div>
     <p class="audio-note" id="audio-status" role="status">Sound begins only when you choose it.</p>
-    <details class="audio-extra"><summary>Audio options</summary><p>Chapter 1 - Mix 1, supplied for Waking Up.</p><label class="file-label">Try an audio file <input id="local-audio" type="file" accept="audio/*"></label><label class="narration-note">Narration <span>No recording supplied <input type="checkbox" disabled aria-label="Narration unavailable: no recording supplied"></span></label></details>
+    <details class="audio-extra"><summary>Audio options</summary><label class="file-label">Try an audio file <input id="local-audio" type="file" accept="audio/*"></label><label class="narration-note">Narration <span>No recording supplied <input type="checkbox" disabled aria-label="Narration unavailable: no recording supplied"></span></label></details>
   </dialog>
 
   <dialog id="options" aria-labelledby="options-title" class="options panel">
@@ -137,8 +137,8 @@
   </dialog>
 
   <dialog id="door-panel" aria-labelledby="door-title" class="small-panel panel"><div class="panel-head"><div><p class="eyebrow">Beyond this room</p><h2 id="door-title">A little more time.</h2></div><button class="close-panel" aria-label="Return to room"><svg class="ui-icon " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><p>The door has a place in the chapter. This first experience stays with the beginning, here in the bed.</p><button data-open="reader">Continue in the manuscript <svg class="ui-icon " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 18 18 6M7 6h11v11"/></svg></button></dialog>
-  <audio id="music" preload="none" playsinline src="./assets/chapter-one-mix-1.wav"></audio>
-  <noscript><div class="no-script"><h2>The Visitor</h2><p>Reading and music are available without the interactive room.</p><a href="./assets/chapter-one.pdf?v=e7184550784a">Read Chapter One</a><a href="./assets/chapter-one-mix-1.wav">Listen to Chapter 1 - Mix 1</a></div></noscript>
-  <script type="module" src="./app.js?v=23"></script>
+  <audio id="music" preload="none" playsinline src="./assets/chapter-one-master-2.wav"></audio>
+  <noscript><div class="no-script"><h2>The Visitor</h2><p>Reading and music are available without the interactive room.</p><a href="./assets/chapter-one.pdf?v=e7184550784a">Read Chapter One</a><a href="./assets/chapter-one-master-2.wav">Listen to Chapter One - Waking Up</a></div></noscript>
+  <script type="module" src="./app.js?v=24"></script>
 </body>
 </html>

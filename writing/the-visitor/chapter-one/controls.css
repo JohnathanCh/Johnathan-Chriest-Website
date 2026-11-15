@@ -47,3 +47,5 @@ summary{display:flex;align-items:center;justify-content:space-between;gap:16px;l
 @media(max-width:700px){#chapter-text{font-size:18px;line-height:1.85}#reader-title{font-size:29px}#listen h2{font-size:30px;line-height:1.15;text-wrap:balance}}
 
 .chapter-heading-prefix,.chapter-heading-name{display:inline-block;white-space:nowrap}
+
+#listen .music-listening-note{font:14px/1.7 var(--sans);color:#51624f;margin:18px 0 22px}
