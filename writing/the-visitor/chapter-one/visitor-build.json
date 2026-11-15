@@ -1,6 +1,6 @@
 {
   "id": "visitor-chapter-one",
-  "version": 23,
+  "version": 24,
   "visual": "blender",
   "masterDimensions": [
     16384,
@@ -11,15 +11,16 @@
   "chapterSourceSha256": "e7184550784ad77277983618b7a3f5156d134617a58ccb1a4cecb179df7eaa59",
   "controls": "Unified drawn SVG icons and styled native controls; no emoji UI",
   "audio": {
-    "file": "chapter-one-mix-1.wav",
-    "title": "Chapter 1 - Mix 1",
-    "sha256": "283c0d115b68f6fe238acfe90ea7ebd40409803c3ec35796d736b2cf38cd1264",
-    "bytes": 47520080,
-    "seconds": 165,
+    "file": "chapter-one-master-2.wav",
+    "title": "Chapter One - Waking Up",
+    "sha256": "29e6cb689c8952bbd4f963f5aeb14b224a2575bdbc8de98d448b275648e553d6",
+    "bytes": 52128080,
+    "seconds": 181.0,
     "channels": 2,
     "sampleRate": 48000,
     "bitsPerSample": 24,
     "encoding": "PCM WAV",
-    "processing": "None; source and deployed file must have the same SHA-256."
+    "processing": "None; source and deployed file must have the same SHA-256.",
+    "sourceVersion": "Master 2"
   }
 }
