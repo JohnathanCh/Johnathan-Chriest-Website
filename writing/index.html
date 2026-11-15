@@ -12,7 +12,7 @@
   <meta property="og:description" content="A novel told chapter by chapter, with original music and spaces to explore.">
   <meta property="og:url" content="https://johnathanchriest.art/writing/">
   <meta property="og:image" content="https://johnathanchriest.art/assets/writing/chapter-one-from-bed.webp">
-  <link rel="stylesheet" href="/portfolio.css?v=20261113-gallery">
+  <link rel="stylesheet" href="/portfolio.css?v=20261115-chapters">
   <link rel="stylesheet" href="/interface-icons.css?v=20261115">
 </head>
 <body class="writing-page">
@@ -24,13 +24,20 @@
     </nav>
   </header>
   <main class="writing-main">
-    <div>
-      <p class="writing-label">Writing / A novel in progress</p>
-      <h1>The Visitor</h1>
+    <header class="writing-project" aria-labelledby="visitor-title">
+      <div>
+        <p class="writing-label">Writing / A novel in progress</p>
+        <h1 id="visitor-title">The Visitor</h1>
+      </div>
       <p class="writing-intro">A novel told chapter by chapter, with original music and spaces to explore.</p>
-      <a class="chapter-link" href="/writing/the-visitor/chapter-one/">Enter Chapter One <span aria-hidden="true"><svg class="site-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 18 18 6M7 6h11v11"/></svg></span></a>
-      <p class="writing-note">Read, listen, and explore the room.</p>
-    </div>
+    </header>
+
+    <section class="chapter-entry" aria-labelledby="chapter-one-title">
+      <div class="chapter-copy">
+        <h2 class="chapter-title" id="chapter-one-title"><span>Chapter One -</span> <span>Waking Up</span></h2>
+        <a class="chapter-link" href="/writing/the-visitor/chapter-one/">Enter Chapter One <span aria-hidden="true"><svg class="site-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 18 18 6M7 6h11v11"/></svg></span></a>
+        <p class="writing-note">Read, listen, and explore the room.</p>
+      </div>
     <figure class="chapter-preview">
       <div class="chapter-gallery" aria-label="Three views of Chapter One">
         <a class="chapter-gallery-lead" href="/writing/the-visitor/chapter-one/" aria-label="Enter Chapter One — view from the bed">
@@ -45,9 +52,17 @@
       </div>
       <figcaption><span>Chapter One — Waking Up</span><span>An immersive reading experience</span></figcaption>
     </figure>
+    </section>
+
     <section class="coming-chapter" aria-labelledby="chapter-two-title">
-      <h2 id="chapter-two-title">Chapter Two</h2>
-      <p>Coming soon</p>
+      <div class="chapter-copy">
+        <h2 class="chapter-title" id="chapter-two-title">Chapter Two</h2>
+        <p class="chapter-status">Coming soon</p>
+      </div>
+      <div class="chapter-continuation">
+        <p class="continuation-title">There is more to come.</p>
+        <p>Return for the next chapter of <em>The Visitor</em>.</p>
+      </div>
     </section>
   </main>
 </body>
