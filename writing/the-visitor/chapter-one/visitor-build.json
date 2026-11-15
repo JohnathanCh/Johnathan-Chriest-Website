@@ -1,6 +1,6 @@
 {
   "id": "visitor-chapter-one",
-  "version": 22,
+  "version": 23,
   "visual": "blender",
   "masterDimensions": [
     16384,
@@ -8,6 +8,18 @@
   ],
   "canonical": "https://johnathanchriest.art/writing/the-visitor/chapter-one/",
   "delivery": "Responsive panorama tiles; original From the Bed viewpoint.",
-  "chapterSourceSha256": "de14e2b0230bbc017eecac0427cc12b6ddfa105ed00f9e5e1033f9839702d238",
-  "controls": "Unified drawn SVG icons and styled native controls; no emoji UI"
+  "chapterSourceSha256": "e7184550784ad77277983618b7a3f5156d134617a58ccb1a4cecb179df7eaa59",
+  "controls": "Unified drawn SVG icons and styled native controls; no emoji UI",
+  "audio": {
+    "file": "chapter-one-mix-1.wav",
+    "title": "Chapter 1 - Mix 1",
+    "sha256": "283c0d115b68f6fe238acfe90ea7ebd40409803c3ec35796d736b2cf38cd1264",
+    "bytes": 47520080,
+    "seconds": 165,
+    "channels": 2,
+    "sampleRate": 48000,
+    "bitsPerSample": 24,
+    "encoding": "PCM WAV",
+    "processing": "None; source and deployed file must have the same SHA-256."
+  }
 }

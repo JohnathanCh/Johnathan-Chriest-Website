@@ -1,9 +1,9 @@
 {
-  "title": "Waking Up",
+  "title": "Chapter One - Waking Up",
   "chapter": 1,
   "source": "chapter-one.pdf",
-  "sourceSha256": "de14e2b0230bbc017eecac0427cc12b6ddfa105ed00f9e5e1033f9839702d238",
-  "printedHeading": "Chapter Four",
+  "sourceSha256": "e7184550784ad77277983618b7a3f5156d134617a58ccb1a4cecb179df7eaa59",
+  "printedHeading": "Chapter One - Waking Up",
   "blocks": [
     {
       "type": "paragraph",

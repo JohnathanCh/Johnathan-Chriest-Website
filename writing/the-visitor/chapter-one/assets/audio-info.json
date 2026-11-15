@@ -1,0 +1,12 @@
+{
+  "file": "chapter-one-mix-1.wav",
+  "title": "Chapter 1 - Mix 1",
+  "sha256": "283c0d115b68f6fe238acfe90ea7ebd40409803c3ec35796d736b2cf38cd1264",
+  "bytes": 47520080,
+  "seconds": 165,
+  "channels": 2,
+  "sampleRate": 48000,
+  "bitsPerSample": 24,
+  "encoding": "PCM WAV",
+  "processing": "None; source and deployed file must have the same SHA-256."
+}
