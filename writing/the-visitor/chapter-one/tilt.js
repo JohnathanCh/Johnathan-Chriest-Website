@@ -31,9 +31,9 @@ export function initTilt({getRoom,isExploring=()=>true,isReduced=()=>false,onSta
   if(isReduced())say('Motion is paused with reduced motion. Drag the room or use the arrows.');
   else if(!isSecureContext)say('Motion needs trusted HTTPS. Swipe to look around, or use the arrows.');
   else if(typeof DeviceOrientationEvent==='undefined')say('Motion sensors are unavailable. Swipe to look around, or use the arrows.');
-  else if(!reason)say('Enable motion while holding your phone comfortably. You can also drag to look.');
+  else if(!reason)say('Enable motion to look around by tilting your phone, or use arrows and swipes.');
  }
- function stop(message='Motion off. Swipe to look around, or use the arrows. Tap Centre to return.'){
+ function stop(message='Motion off. Swipe to look around, or use the arrows. Tap Center to return.'){
   requestId++;enabled=false;pending=false;received=false;reference=null;filtered=null;lastRaw=null;lastTime=0;needsRebase=true;clearTimeout(timer);clearTimeout(permissionTimer);
   removeEventListener('deviceorientation',orientation);getRoom()?.holdView();onModeChange('arrows');say(message);refresh();
  }
@@ -72,11 +72,11 @@ export function initTilt({getRoom,isExploring=()=>true,isReduced=()=>false,onSta
    if(permission!=='granted'){pending=false;say('Motion permission was denied. Drag to look, or allow motion for this site in your browser settings and retry.');refresh();return false;}
    pending=false;enabled=true;onModeChange('motion');received=false;reference=null;filtered=null;lastTime=0;lastRaw=null;needsRebase=true;
    removeEventListener('deviceorientation',orientation);addEventListener('deviceorientation',orientation,{passive:true});
-   say('Hold this comfortable angle as forward. Turn or tilt after closing the menu.');refresh();onNavigate();armTimeout();return true;
+   say(isExploring()?'Motion enabled. Turn or tilt your phone to look around.':'Motion enabled. Hold your phone comfortably, then tap Awaken.');refresh();onNavigate();armTimeout();return true;
   }catch(error){clearTimeout(permissionTimer);if(id!==requestId||disposed)return false;pending=false;say('Motion access could not start. Drag to look, or retry Enable motion.');refresh();return false;}
  }
  function rebase(){needsRebase=true;lastTime=0;lastAngle=null;getRoom()?.holdView();}
- function recenter(){reference=null;filtered=null;needsRebase=true;getRoom()?.setMobileLook(0,0,{immediate:isReduced()});say('View recentered. Hold this angle as your forward view.');onNavigate();}
+ function recenter(){reference=null;filtered=null;needsRebase=true;getRoom()?.reset(isReduced());say(enabled?'View centered. Hold this angle as your forward view.':'View centered.');onNavigate();}
  function nudge(y,p){const room=getRoom();if(!room)return;const view=room.snapshot();room.setMobileLook(view.targetYaw/D+y,(view.targetPitch-view.neutralPitch)/D+p,{immediate:isReduced()});needsRebase=true;onNavigate();}
  const changed=()=>{if(!media.matches)stop();refresh();};
  const pageHide=()=>{rebase();clearTimeout(timer);},pageShow=()=>{rebase();if(enabled&&!received)armTimeout();};
