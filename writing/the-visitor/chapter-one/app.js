@@ -1,10 +1,11 @@
+import {icon} from './icons.js?v=22';
 import {initMobileUI,MOBILE_QUERY} from './mobile-ui.js?v=8';
-import {initTilt} from './tilt.js?v=21';
+import {initTilt} from './tilt.js?v=22';
 if(!window.visitorStartupTimedOut){
 // The story shell stays independent of WebGL so text and audio survive renderer failures.
 const $=id=>document.getElementById(id);
 const params=new URLSearchParams(location.search);
-const restoredURL=new URL(location.href);restoredURL.searchParams.set('visual','blender');restoredURL.searchParams.set('v','21');history.replaceState(null,'',restoredURL);
+const restoredURL=new URL(location.href);restoredURL.searchParams.set('visual','blender');restoredURL.searchParams.set('v','22');history.replaceState(null,'',restoredURL);
 const state={phase:'arrival',muted:true,reduced:matchMedia('(prefers-reduced-motion: reduce)').matches,quality:'auto',mode:'rendered',fallback:false,ready:false,clarity:1};
 const music=$('music');music.volume=.45;music.muted=true;
 const openingFilm=$('opening-film');openingFilm.muted=true;
@@ -34,8 +35,8 @@ function reduced(value){state.reduced=value;$('reduced-motion').checked=value;do
 function clarityChanged(progress){state.clarity=progress;if(state.phase!=='exploring')return;$('clear-view').hidden=progress>=1||state.fallback;$('orientation-hint').hidden=state.fallback;$('orientation-hint').style.opacity='1';const mobile=matchMedia(MOBILE_QUERY).matches;$('orientation-hint').textContent=progress<1?'Let your eyes adjust…':mobile?(tilt?.snapshot().enabled?'Turn or tilt your phone to look around':viewControl==='arrows'?'Swipe or use the arrows to look around · Tap Centre to return':'Enable motion in the menu, or drag to look around'):'Move toward either edge for a small glance';if(progress>=1){clearTimeout(clarityChanged.timer);clarityChanged.timer=setTimeout(()=>$('orientation-hint').style.opacity='0',6500);}}
 reduced(state.reduced);chooseView('arrows');
 function enterFallback(message){state.fallback=true;syncViewChoice();$('fallback-note').hidden=state.phase!=='exploring';$('canvas-host').hidden=true;$('poster').hidden=false;$('markers').hidden=true;$('quality').disabled=true;if(message)stats.errors.push(message);}
-function renderChapter(data){const article=$('chapter-text');article.replaceChildren();for(const [i,text] of data.paragraphs.entries()){const p=document.createElement('p');p.textContent=text;article.append(p);if(i<data.paragraphs.length-1){const d=document.createElement('div');d.className='scene-break';d.textContent='#';d.setAttribute('aria-hidden','true');article.append(d);}}}
-async function loadChapter(){const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);try{const response=await fetch('./assets/chapter.json',{signal:controller.signal});if(!response.ok)throw new Error('Chapter file not found');renderChapter(await response.json());}catch(e){stats.errors.push(e.message);$('chapter-text').replaceChildren();const p=document.createElement('p');p.textContent='The chapter text could not load. The original PDF is available above.';const retry=document.createElement('button');retry.textContent='Retry chapter';retry.onclick=loadChapter;$('chapter-text').append(p,retry);}finally{clearTimeout(timer);}}
+function renderChapter(data){const article=$('chapter-text');article.replaceChildren();for(const block of data.blocks||data.paragraphs.map(text=>({type:'paragraph',text}))){if(block.type==='break'){const divider=document.createElement('div');divider.className='scene-break';divider.setAttribute('aria-hidden','true');divider.innerHTML=icon('ornament');article.append(divider);}else{const paragraph=document.createElement('p');paragraph.textContent=block.text;if(block.indented)paragraph.className='chapter-indented';article.append(paragraph);}}}
+async function loadChapter(){const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);try{const response=await fetch('./assets/chapter.json',{signal:controller.signal,cache:'no-cache'});if(!response.ok)throw new Error('Chapter file not found');renderChapter(await response.json());}catch(e){stats.errors.push(e.message);$('chapter-text').replaceChildren();const p=document.createElement('p');p.textContent='The chapter text could not load. The original PDF is available above.';const retry=document.createElement('button');retry.textContent='Retry chapter';retry.onclick=loadChapter;$('chapter-text').append(p,retry);}finally{clearTimeout(timer);}}
 function withinRoomDeadline(work,deadline,signal,stage){
  return new Promise((resolve,reject)=>{
   let settled=false;
@@ -104,7 +105,7 @@ function syncPlay(){
  const audible=active&&audioPlaying&&!audioWaiting&&!audioFailed&&!music.muted&&music.volume>0;
  const title=$('track-title').textContent;
  const status=audioFailed?'Unable to play':music.ended?'Finished':active&&audioWaiting?'Loading…':active&&(music.muted||music.volume===0)?'Muted':audible?'Playing':active?'Loading…':hasPlayed?'Paused':'Ready to play';
- $('play').innerHTML=active?'Pause <span aria-hidden="true">Ⅱ</span>':'Play <span aria-hidden="true">▶</span>';
+ $('play').innerHTML=active?'Pause '+icon('pause'):'Play '+icon('play');
  $('play').setAttribute('aria-label',active?'Pause music':'Play music');
  $('player-toggle').setAttribute('aria-label',`${active?'Pause':'Play'} ${title}${compactMobile()?' and open music details':''}`);
  $('player-toggle').querySelector('.player-play').toggleAttribute('hidden',active);
@@ -126,7 +127,7 @@ music.addEventListener('ended',()=>{audioPlaying=false;audioWaiting=false;$('aud
 function syncPosition(){
  const duration=Number.isFinite(music.duration)?music.duration:0;
  const time=music.currentTime||0,label=`${formatTime(time)} / ${formatTime(duration)}`;
- for(const id of ['seek','player-seek']){const input=$(id);input.disabled=duration<=0;input.max=duration||1;input.value=time;input.setAttribute('aria-valuetext',label);}
+ for(const id of ['seek','player-seek']){const input=$(id);input.disabled=duration<=0;input.max=duration||1;input.value=time;input.style.setProperty('--range-progress',`${duration?time/duration*100:0}%`);input.setAttribute('aria-valuetext',label);}
  $('track-time').textContent=label;$('player-time').textContent=label;
 }
 for(const event of ['loadedmetadata','durationchange','timeupdate','seeked','emptied'])music.addEventListener(event,syncPosition);
@@ -139,7 +140,8 @@ function showPlayer(){if(state.phase!=='exploring')return;activatePlayer();$('pl
 $('show-player').onclick=()=>{if(music.paused)playMusic();activatePlayer();openPanel('listen');};
 for(const id of ['seek','player-seek'])$(id).oninput=e=>{if(Number.isFinite(music.duration)){music.currentTime=Number(e.target.value);syncPosition();}};
 syncPosition();
-$('volume').oninput=e=>{music.volume=Number(e.target.value);setSound(music.volume>0);};
+$('volume').style.setProperty('--range-progress',`${music.volume*100}%`);
+$('volume').oninput=e=>{music.volume=Number(e.target.value);e.target.style.setProperty('--range-progress',`${music.volume*100}%`);setSound(music.volume>0);};
 $('mute').onclick=() =>setSound(state.muted);
 $('sound-toggle').onclick=()=>{setSound(state.muted);if(!state.muted&&music.paused)playMusic();};
 $('local-audio').onchange=e=>{const file=e.target.files[0];if(!file)return;music.pause();if(localAudioURL)URL.revokeObjectURL(localAudioURL);localAudioURL=URL.createObjectURL(file);music.src=localAudioURL;$('track-title').textContent=file.name;$('track-credit').textContent='Local audio · only on this device';$('track-description').textContent='Your selected audio plays only on this device. Listen alongside the room or Chapter One, and use the controls below to find your place.';syncPlay();playMusic();};

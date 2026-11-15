@@ -1,3 +1,4 @@
+import {icon} from './icons.js?v=22';
 import {Euler,Quaternion,Vector3} from 'three';
 import {MOTION} from './motion-config.js?v=16';
 export const MOBILE_QUERY='(max-width:700px), (pointer:coarse) and (max-width:1100px)';
@@ -15,7 +16,7 @@ export function relativeLook(reference,current){
 }
 export function initTilt({getRoom,isExploring=()=>true,isReduced=()=>false,onStatus=()=>{},onNavigate=()=>{},onModeChange=()=>{}}){
  const media=matchMedia(MOBILE_QUERY),controls=document.createElement('div');controls.className='tilt-controls';
- controls.innerHTML='<button type="button" id="tilt-enable" aria-pressed="false">Enable motion</button><button type="button" id="tilt-recenter">Recenter view</button><button type="button" id="tilt-use-arrows" aria-pressed="true">Use arrows</button><div class="tilt-directions"><button type="button" id="look-left">← Look left</button><button type="button" id="look-right">Look right →</button><button type="button" id="look-up">↑ Look up</button><button type="button" id="look-down">Look down ↓</button></div><p id="tilt-status" role="status"></p><a id="motion-setup-link" href="./motion-setup.html" hidden>Set up phone motion ↗</a>';
+ controls.innerHTML=`<button type="button" id="tilt-enable" aria-pressed="false">Enable motion</button><button type="button" id="tilt-recenter">Recenter view</button><button type="button" id="tilt-use-arrows" aria-pressed="true">Use arrows</button><div class="tilt-directions"><button type="button" id="look-left">${icon('left')} Look left</button><button type="button" id="look-right">Look right ${icon('right')}</button><button type="button" id="look-up">${icon('up')} Look up</button><button type="button" id="look-down">Look down ${icon('down')}</button></div><p id="tilt-status" role="status"></p><a id="motion-setup-link" href="./motion-setup.html" hidden>Set up phone motion ${icon('external')}</a>`;
  document.getElementById('room-nav').append(controls);
  const button=controls.querySelector('#tilt-enable'),status=controls.querySelector('#tilt-status');
  let enabled=false,pending=false,disposed=false,received=false,reference=null,filtered=null,lastRaw=null,lastTime=0,lastAngle=null,revision=null,needsRebase=true,base={yaw:0,pitch:0},timer,permissionTimer,requestId=0,reason='';

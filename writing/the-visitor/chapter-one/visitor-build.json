@@ -1,11 +1,13 @@
 {
   "id": "visitor-chapter-one",
-  "version": 21,
+  "version": 22,
   "visual": "blender",
   "masterDimensions": [
     16384,
     8192
   ],
   "canonical": "https://johnathanchriest.art/writing/the-visitor/chapter-one/",
-  "delivery": "Responsive panorama tiles; original From the Bed viewpoint."
+  "delivery": "Responsive panorama tiles; original From the Bed viewpoint.",
+  "chapterSourceSha256": "de14e2b0230bbc017eecac0427cc12b6ddfa105ed00f9e5e1033f9839702d238",
+  "controls": "Unified drawn SVG icons and styled native controls; no emoji UI"
 }
