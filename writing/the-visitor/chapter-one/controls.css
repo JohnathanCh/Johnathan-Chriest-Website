@@ -50,12 +50,24 @@ summary{display:flex;align-items:center;justify-content:space-between;gap:16px;l
 
 #listen .music-listening-note{font:14px/1.7 var(--sans);color:#51624f;margin:18px 0 22px}
 
-/* Reduced motion uses explicit desktop controls, styled like the phone controls. */
-body.desktop-manual #mobile-look{position:fixed;z-index:22;left:32px;bottom:25px;display:flex;gap:0;padding:4px;border:1px solid #e1e6d456;border-radius:30px;background:#1b342de0;color:var(--paper);box-shadow:0 5px 24px #091c1530}
-body.desktop-manual #mobile-look button{display:flex;align-items:center;justify-content:center;gap:8px;min-width:43px;min-height:46px;padding:8px 10px;border:0;border-radius:23px;background:transparent;color:inherit;font:11px var(--sans)}
-body.desktop-manual #mobile-look #view-center{min-width:81px;border-inline:1px solid #e6ebdd20;border-radius:0;padding-inline:12px}body.desktop-manual #view-center .ui-icon{width:16px;height:16px;opacity:.7}
-body.desktop-manual #mobile-look button:active{background:#edf0e51f}body.desktop-manual .music-player{left:32px;bottom:105px;transform:none}
+/* Desktop always offers Center; manual movement adds arrows and a way back. */
+body.desktop-view-controls #mobile-look{position:fixed;z-index:22;left:32px;bottom:25px;display:flex;gap:0;padding:4px;border:1px solid #e1e6d456;border-radius:30px;background:#1b342de0;color:var(--paper);box-shadow:0 5px 24px #091c1530}
+body.desktop-view-controls #mobile-look button{display:flex;align-items:center;justify-content:center;gap:8px;min-width:43px;min-height:46px;padding:8px 12px;border:0;border-radius:23px;background:transparent;color:inherit;font:11px var(--sans)}
+#mobile-look button[hidden]{display:none!important}
+body.desktop-view-controls #mobile-look #view-center{min-width:81px}body.desktop-view-controls #view-center .ui-icon{width:16px;height:16px;opacity:.7}
+body.desktop-manual #mobile-look #view-center{border-inline:1px solid #e6ebdd20;border-radius:0}
+body.desktop-view-controls #mobile-look #view-restore-motion{margin-left:6px;padding-inline:16px;border-left:1px solid #e6ebdd40;border-radius:0 23px 23px 0}
+body.desktop-view-controls #mobile-look button:hover,body.desktop-view-controls #mobile-look button:active{background:#edf0e51f}
+body.desktop-manual .music-player{left:32px;bottom:105px;transform:none}
+body.desktop-view-controls:not(.desktop-manual) .music-player{left:max(32px,calc(32% - 145px));transform:none}
+/* Keep the always-available Center clear of the player in narrow desktop windows. */
+@media(min-width:701px) and (max-width:1000px) and (pointer:fine){body.desktop-view-controls .music-player{left:32px;bottom:105px;transform:none}body.desktop-view-controls #orientation-hint{bottom:225px;left:32px;max-width:440px}}
 body.desktop-manual #orientation-hint{left:32px;bottom:96px;max-width:440px}body.desktop-manual[data-player-active=true] #orientation-hint{bottom:225px}
+@media(max-width:700px),(pointer:coarse) and (max-width:1100px){
+ #mobile-look #view-restore-motion{position:absolute;bottom:calc(100% + 10px);left:0;min-height:42px;padding:10px 16px;white-space:nowrap;border:1px solid #e1e6d456;border-radius:24px;background:#1b342de0;font:11px var(--sans);box-shadow:0 5px 24px #091c1530}
+ body.view-restore-available #orientation-hint,body.view-restore-available[data-player-active=true] #orientation-hint{bottom:calc(144px + env(safe-area-inset-bottom))}
+ body.view-restore-available #clear-view,body.view-restore-available[data-player-active=true] #clear-view{bottom:calc(182px + env(safe-area-inset-bottom))}
+}
 
 /* Object navigation is discoverable when a prop enters the middle half of the view. */
 .marker{width:84px;height:84px}.marker::before{inset:auto;left:50%;top:50%;width:12px;height:12px;transform:translate(-50%,-50%)}.marker::after{inset:27px}

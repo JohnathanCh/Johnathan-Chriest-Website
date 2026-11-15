@@ -1,12 +1,12 @@
 import {loadingPercent} from './loading-progress.js?v=25';
 import {icon} from './icons.js?v=22';
 import {initMobileUI,MOBILE_QUERY} from './mobile-ui.js?v=8';
-import {initTilt} from './tilt.js?v=25';
+import {initTilt} from './tilt.js?v=26';
 if(!window.visitorStartupTimedOut){
 // The story shell stays independent of WebGL so text and audio survive renderer failures.
 const $=id=>document.getElementById(id);
 const params=new URLSearchParams(location.search);
-const restoredURL=new URL(location.href);restoredURL.searchParams.set('visual','blender');restoredURL.searchParams.set('v','25');history.replaceState(null,'',restoredURL);
+const restoredURL=new URL(location.href);restoredURL.searchParams.set('visual','blender');restoredURL.searchParams.set('v','26');history.replaceState(null,'',restoredURL);
 const state={phase:'arrival',muted:true,reduced:matchMedia('(prefers-reduced-motion: reduce)').matches,quality:'auto',mode:'rendered',fallback:false,ready:false,clarity:1};
 const music=$('music');music.volume=1;music.muted=true;
 const openingFilm=$('opening-film');openingFilm.muted=true;
@@ -17,14 +17,37 @@ let playerActivated=false;
 let audioPlaying=false,audioWaiting=false,audioFailed=false,hasPlayed=false;
 let filmReady=false,filmMode='idle',filmWatchdog;
 const mobileUI=initMobileUI();
-let tilt,viewControl='arrows';
-function syncViewChoice(){const mobile=mobileUI.media.matches;$('mobile-view-choice').hidden=!mobile;$('mobile-look').hidden=!((mobile&&viewControl==='arrows')||state.reduced)||state.phase!=='exploring'||state.fallback;document.body.classList.toggle('desktop-manual',!mobile&&state.reduced);$('arrival-motion').disabled=!state.ready||!room||state.reduced||Boolean(tilt?.snapshot().pending);$('arrival-motion').textContent=viewControl==='motion'?'Disable motion':'Enable motion';$('arrival-motion').setAttribute('aria-pressed',String(viewControl==='motion'));$('arrival-arrows').setAttribute('aria-pressed',String(viewControl==='arrows'));$('arrival-motion-setup').hidden=isSecureContext;refreshPlayerDisplay();}
+let tilt,viewControl='arrows',motionUsed=false;
+function syncViewChoice(){
+ const mobile=mobileUI.media.matches,pending=Boolean(tilt?.snapshot().pending);
+ const navigating=state.phase==='exploring'&&!state.fallback;
+ const restore=state.reduced||(mobile&&motionUsed&&viewControl==='arrows');
+ $('mobile-view-choice').hidden=!mobile;
+ $('mobile-look').hidden=!navigating||(mobile&&viewControl!=='arrows'&&!state.reduced);
+ $('view-left').hidden=$('view-right').hidden=!mobile&&!state.reduced;
+ $('view-restore-motion').hidden=!restore;
+ $('view-restore-motion').disabled=pending;
+ document.body.classList.toggle('desktop-view-controls',!mobile);
+ document.body.classList.toggle('desktop-manual',!mobile&&state.reduced);
+ document.body.classList.toggle('view-restore-available',navigating&&restore);
+ $('arrival-motion').disabled=!state.ready||!room||state.reduced||pending;
+ $('arrival-motion').textContent=pending?'Requesting motion…':viewControl==='motion'?'Disable motion':'Enable motion';
+ $('arrival-motion').setAttribute('aria-pressed',String(viewControl==='motion'));
+ $('arrival-arrows').setAttribute('aria-pressed',String(viewControl==='arrows'));
+ $('arrival-motion-setup').hidden=isSecureContext;refreshPlayerDisplay();
+}
 function compactMobile(){return mobileUI.media.matches&&viewControl==='arrows';}
 function refreshPlayerDisplay(){$('music-player').hidden=state.phase!=='exploring'||(!playerActivated&&!compactMobile());$('player-toggle').setAttribute('aria-label',`${music.paused||music.ended?'Play':'Pause'} ${$('track-title').textContent}${compactMobile()?' and open music details':''}`);}
-function chooseView(mode){viewControl=mode;document.body.dataset.viewControl=mode;syncViewChoice();}
+function chooseView(mode){if(mode==='motion')motionUsed=true;viewControl=mode;document.body.dataset.viewControl=mode;syncViewChoice();}
 mobileUI.media.addEventListener('change',syncViewChoice);
 $('arrival-motion').onclick=async()=>{const request=tilt.enable();syncViewChoice();await request;syncViewChoice();};
-$('arrival-arrows').onclick=()=>tilt.disable('Motion off. Swipe to look around, or use the arrows. Tap Centre to return.');
+$('arrival-arrows').onclick=()=>tilt.disable('Motion off. Swipe to look around, or use the arrows. Tap Center to return.');
+$('view-restore-motion').onclick=async()=>{
+ if(state.reduced)reduced(false);
+ // Phone permission remains inside this explicit tap; desktop resumes cursor movement.
+ if(mobileUI.media.matches){const request=tilt.enable();syncViewChoice();await request;syncViewChoice();}
+ else {$('view-center').focus({preventScroll:true});clarityChanged(state.clarity);}
+};
 $('view-left').onclick=()=>tilt.nudge(12,0);$('view-right').onclick=()=>tilt.nudge(-12,0);$('view-center').onclick=()=>tilt.recenter();
 tilt=initTilt({getRoom:()=>room,isExploring:()=>state.phase==='exploring',isReduced:()=>state.reduced,onNavigate:()=>mobileUI.closeMenu(),onModeChange:chooseView,onStatus:message=>{$('arrival-motion-status').textContent=message;if(state.phase==='exploring')clarityChanged(state.clarity);}});
 const stats={started:performance.now(),essentialBytes:0,essentialMs:null,errors:[]};
@@ -33,7 +56,7 @@ addEventListener('visitor-startup-timeout',()=>{loadController?.abort();stopOpen
 
 function toast(message){$('toast').textContent=message;$('toast').hidden=false;clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('toast').hidden=true,5500);}
 function reduced(value){state.reduced=value;$('reduced-motion').checked=value;document.body.classList.toggle('reduce-motion',value);room?.setReducedMotion(value);if(value){room?.clearView();tilt?.disable('Automatic motion is off. Drag to look around, or use the arrows.');}tilt?.refresh();syncViewChoice();if(state.phase==='exploring')clarityChanged(state.clarity);}
-function clarityChanged(progress){state.clarity=progress;if(state.phase!=='exploring')return;$('clear-view').hidden=progress>=1||state.fallback;$('orientation-hint').hidden=state.fallback;$('orientation-hint').style.opacity='1';const mobile=matchMedia(MOBILE_QUERY).matches;$('orientation-hint').textContent=progress<1?'Let your eyes adjust…':mobile?(tilt?.snapshot().enabled?'Turn or tilt your phone to look around':viewControl==='arrows'?'Swipe or use the arrows to look around · Tap Centre to return':'Enable motion in the menu, or drag to look around'):state.reduced?'Drag to look around, or use the arrows · Centre returns to the bed view':'Move toward either edge to look around · Move back to the middle to hold your view';if(progress>=1){clearTimeout(clarityChanged.timer);clarityChanged.timer=setTimeout(()=>$('orientation-hint').style.opacity='0',6500);}}
+function clarityChanged(progress){state.clarity=progress;if(state.phase!=='exploring')return;$('clear-view').hidden=progress>=1||state.fallback;$('orientation-hint').hidden=state.fallback;$('orientation-hint').style.opacity='1';const mobile=matchMedia(MOBILE_QUERY).matches;$('orientation-hint').textContent=progress<1?'Let your eyes adjust…':mobile?(tilt?.snapshot().enabled?'Turn or tilt your phone to look around':viewControl==='arrows'?'Swipe or use the arrows to look around · Tap Center to return':'Enable motion in the menu, or drag to look around'):state.reduced?'Drag to look around, or use the arrows · Center returns to the bed view':'Move toward either edge to look around · Move back to the middle to hold your view';if(progress>=1){clearTimeout(clarityChanged.timer);clarityChanged.timer=setTimeout(()=>$('orientation-hint').style.opacity='0',6500);}}
 reduced(state.reduced);chooseView('arrows');
 function enterFallback(message){state.fallback=true;syncViewChoice();$('fallback-note').hidden=state.phase!=='exploring';$('canvas-host').hidden=true;$('poster').hidden=false;$('markers').hidden=true;$('quality').disabled=true;if(message)stats.errors.push(message);}
 function renderChapter(data){const article=$('chapter-text');article.replaceChildren();for(const block of data.blocks||data.paragraphs.map(text=>({type:'paragraph',text}))){if(block.type==='break'){const divider=document.createElement('div');divider.className='scene-break';divider.setAttribute('aria-hidden','true');divider.innerHTML=icon('ornament');article.append(divider);}else{const paragraph=document.createElement('p');paragraph.textContent=block.text;if(block.indented)paragraph.className='chapter-indented';article.append(paragraph);}}}

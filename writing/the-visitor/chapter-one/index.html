@@ -20,9 +20,9 @@
   <link rel="stylesheet" href="./music-player.css?v=13">
   <link rel="stylesheet" href="./mobile-ui.css?v=6">
   <link rel="stylesheet" href="./opening-film.css?v=9">
-  <link rel="stylesheet" href="./motion.css?v=16">
-  <link rel="stylesheet" href="./experience.css?v=25">
-  <link rel="stylesheet" href="./controls.css?v=25">
+  <link rel="stylesheet" href="./motion.css?v=26">
+  <link rel="stylesheet" href="./experience.css?v=26">
+  <link rel="stylesheet" href="./controls.css?v=26">
   <style>html,body{background:#000}#startup-black{position:fixed;inset:0;z-index:100;background:#000;color:#dedfd5;display:grid;place-items:center;font:13px system-ui}#startup-black[hidden]{display:none}#startup-black span{opacity:0;animation:loading-label 1s 1.5s forwards}@keyframes loading-label{to{opacity:.7}}#eyelids div{height:calc(50% + 2px)!important;filter:none!important;border-radius:0!important;backface-visibility:hidden;will-change:transform}#eyelids div:first-child{top:-1px}#eyelids div:last-child{bottom:-1px}</style>
   <script>setTimeout(function(){var e=document.getElementById("startup-black");if(e)e.hidden=true;},35000);</script>
   <script type="importmap">{"imports":{"three":"./vendor/three.module.js","three/addons/":"./vendor/addons/"}}</script>
@@ -79,9 +79,8 @@
         <p>Thanks for stopping by.</p>
       </div>
       <section id="mobile-view-choice" aria-label="Choose how to look around" hidden>
-        <p>Enable motion to tilt your phone to look around the room, or use arrows and swiping to do the same.</p>
+        <p id="arrival-motion-status" role="status">Enable motion to look around by tilting your phone, or use arrows and swipes.</p>
         <div class="view-choice-buttons"><button type="button" id="arrival-motion" aria-pressed="false" disabled>Enable motion</button><button type="button" id="arrival-arrows" aria-pressed="true">Use arrows</button></div>
-        <p id="arrival-motion-status" role="status">You can also swipe to look around. Tap Centre to return to the bed view.</p>
         <a id="arrival-motion-setup" href="./motion-setup.html" hidden>Set up phone motion <svg class="ui-icon " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 18 18 6M7 6h11v11"/></svg></a>
       </section>
       <button class="awaken" id="awaken" disabled><span>Preparing the room</span><span aria-hidden="true"><svg class="ui-icon " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 18 18 6M7 6h11v11"/></svg></span></button>
@@ -110,7 +109,8 @@
     <div class="player-progress"><input id="player-seek" type="range" min="0" max="1" step="0.1" value="0" aria-label="Music position" disabled><output id="player-time" for="player-seek">0:00 / 0:00</output></div>
   </section>
   <nav id="mobile-look" aria-label="Look around the room" hidden>
-    <button type="button" id="view-left" aria-label="Look left"><svg class="ui-icon " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 12H5m6-6-6 6 6 6"/></svg></button><button type="button" id="view-center" aria-label="Return to centre view"><svg class="ui-icon " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 4H4v4m12-4h4v4M4 16v4h4m12-4v4h-4M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/></svg><span>Centre</span></button><button type="button" id="view-right" aria-label="Look right"><svg class="ui-icon " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
+    <button type="button" id="view-left" aria-label="Look left"><svg class="ui-icon " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 12H5m6-6-6 6 6 6"/></svg></button><button type="button" id="view-center" aria-label="Return to center view"><svg class="ui-icon " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 4H4v4m12-4h4v4M4 16v4h4m12-4v4h-4M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/></svg><span>Center</span></button><button type="button" id="view-right" aria-label="Look right"><svg class="ui-icon " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
+    <button type="button" id="view-restore-motion" hidden>Re-enable motion</button>
   </nav>
   <nav id="room-nav" aria-label="Room menu" hidden>
     <button data-open="reader">Read</button><span aria-hidden="true">/</span>
@@ -149,6 +149,6 @@
   <dialog id="door-panel" aria-labelledby="door-title" class="small-panel panel"><div class="panel-head"><div><p class="eyebrow">Beyond this room</p><h2 id="door-title">A little more time.</h2></div><button class="close-panel" aria-label="Return to room"><svg class="ui-icon " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><p>The door has a place in the chapter. This first experience stays with the beginning, here in the bed.</p><button data-open="reader">Continue in the manuscript <svg class="ui-icon " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 18 18 6M7 6h11v11"/></svg></button></dialog>
   <audio id="music" preload="none" playsinline src="./assets/chapter-one-master-2.wav"></audio>
   <noscript><div class="no-script"><h2>The Visitor</h2><p>Reading and music are available without the interactive room.</p><a href="./assets/chapter-one.pdf?v=e7184550784a">Read Chapter One</a><a href="./assets/chapter-one-master-2.wav">Listen to Chapter One - Waking Up</a></div></noscript>
-  <script type="module" src="./app.js?v=25"></script>
+  <script type="module" src="./app.js?v=26"></script>
 </body>
 </html>
