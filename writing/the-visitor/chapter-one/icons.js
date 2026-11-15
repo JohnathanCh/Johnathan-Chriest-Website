@@ -1,0 +1,3 @@
+/* One drawn icon family for room navigation and playback. */
+const paths={"left":"M19 12H5m6-6-6 6 6 6","right":"M5 12h14m-6-6 6 6-6 6","up":"M12 19V5m-6 6 6-6 6 6","down":"M12 5v14m-6-6 6 6 6-6","external":"M6 18 18 6M7 6h11v11","close":"m6 6 12 12M18 6 6 18","center":"M8 4H4v4m12-4h4v4M4 16v4h4m12-4v4h-4M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0","replay":"M5 8a8 8 0 1 1-1 7M5 3v5h5","menu":"M5 7h14M5 12h14M5 17h14","play":"m8 5 11 7-11 7Z","pause":"M8 5v14M16 5v14","ornament":"m12 7 5 5-5 5-5-5Z"};
+export function icon(name){return `<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="${paths[name]||paths.right}"/></svg>`;}

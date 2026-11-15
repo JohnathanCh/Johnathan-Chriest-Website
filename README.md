@@ -37,3 +37,27 @@ The shared music header includes a Home button linking to `/`, including a centr
 ## Publishing
 
 Work on `development`, then review and merge a pull request into `production` to publish. GitHub Pages serves the root of `production`; keep `CNAME` at the repository root.
+
+## Canonical local folder and updates
+
+The working repository is `/Volumes/T7 Shield/*** The Visitor/Website/Johnathan_Chriest_Website/`.
+The older Desktop checkout is now `/Users/John/Desktop/The Rome Prize/Website/OLD johnathan-chriest-website/`; it is preserved as an archive and should not be used for publishing.
+`4_Blink_2026-11-12` and other numbered Website folders are earlier prototypes, not the publishing repository.
+
+Edit The Visitor in `writing/the-visitor/chapter-one/`. Its `assets/` folder is the correct place for `chapter-one.pdf`. The reader also needs `chapter.json`; after replacing the PDF, run `python3 -B scripts/update-chapter.py` from this repository. This extracts its prose and source separators without rewriting them and updates the PDF cache tag in `index.html`. It requires Poppler's `pdftotext`, already installed on John's Mac. The supplied PDF is never modified. Its current printed heading says “Chapter Four”; the website labels this entry Chapter One as requested.
+
+For changes to HTML, CSS or JavaScript, save those files in this repository. Preview and check them first. Do not copy changes from an older prototype over the current chapter directory.
+
+To publish a chapter PDF update:
+
+1. Make sure the T7 is connected. In Terminal, `cd '/Volumes/T7 Shield/*** The Visitor/Website/Johnathan_Chriest_Website'`.
+2. Work on `development`. Before editing, run `git switch development` and `git pull --ff-only origin development` when your working files are clean.
+3. Replace `writing/the-visitor/chapter-one/assets/chapter-one.pdf`, then run `python3 -B scripts/update-chapter.py`.
+4. Inspect `git diff` and preview the result. Stage the files you intend to publish: `git add writing/the-visitor/chapter-one/assets/chapter-one.pdf writing/the-visitor/chapter-one/assets/chapter.json writing/the-visitor/chapter-one/index.html`.
+5. Run `git commit -m "Update Chapter One"`, then `git push origin development`.
+6. On GitHub, create a pull request with base **production** and compare **development**. Review and merge it. `development` alone is not published.
+7. In the repository's Actions tab, wait for the Pages build/deployment to succeed. Open https://johnathanchriest.art/writing/the-visitor/chapter-one/ and refresh. GitHub Pages automatically publishes the root of `production` to the custom domain.
+
+For other updates, stage the specific changed source files instead. Music template changes additionally require `node scripts/build-music-pages.mjs`; commit its generated music pages. Avoid `git add .` so unrelated personal files are not accidentally included. Local `.task-work/` profiles, reports, cache and temporary files are ignored and must not be uploaded. Keep `CNAME` unchanged.
+
+For a local preview from the correct repository, run `python3 -B scripts/preview.py --port 8080`, then open http://127.0.0.1:8080/writing/the-visitor/chapter-one/. The server supports seeking audio and refuses requests for private dot-folders. Production HTTPS is the easiest way to test real phone motion; local HTTP supports the arrow/swipe interface. Use a different free port if 8080 is already running the preview.
