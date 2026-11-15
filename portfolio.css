@@ -72,16 +72,23 @@ a:focus-visible { outline: 2px solid currentColor; outline-offset: 6px; }
 .writing-page .portfolio-header { border-bottom: 1px solid #262c2924; }
 .writing-main {
   max-width: 1680px;
-  min-height: calc(100svh - 92px);
   margin: 0 auto;
-  padding: clamp(48px, 6vw, 104px) clamp(24px, 4vw, 72px);
+  padding: clamp(40px, 4.5vw, 76px) clamp(24px, 4vw, 72px) clamp(56px, 5vw, 88px);
+}
+.writing-project,.chapter-entry,.coming-chapter {
   display: grid;
   grid-template-columns: minmax(0, .85fr) minmax(0, 1.3fr);
-  align-items: center;
-  gap: clamp(36px, 5vw, 96px);
+  column-gap: clamp(36px, 5vw, 96px);
 }
+.writing-project { align-items: end; padding-bottom: clamp(32px, 3.5vw, 56px); border-bottom: 1px solid #262c2924; }
+.writing-project .writing-label { margin-bottom: 18px; }
+.writing-project .writing-intro { margin: 0; max-width: 40ch; font-size: 16px; }
+.chapter-entry { align-items: center; padding-block: clamp(44px, 4.5vw, 76px); }
+.chapter-copy { min-width: 0; }
+.chapter-title { margin: 0 0 32px; font: 400 clamp(54px, 5.9vw, 100px)/1.06 var(--serif); letter-spacing: -.05em; text-wrap: balance; }
+.chapter-title>span { display: inline-block; white-space: nowrap; }
 .writing-label { color: var(--muted-ink); margin: 0 0 24px; font-size: 11px; letter-spacing: .11em; text-transform: uppercase; }
-.writing-main h1 { margin: 0 0 25px; font: 400 clamp(54px, 6vw, 104px)/1.04 var(--serif); letter-spacing: -.05em; }
+.writing-main h1 { margin: 0; font: 400 clamp(40px, 4.2vw, 64px)/1.08 var(--serif); letter-spacing: -.045em; }
 .writing-intro { max-width: 34ch; margin: 0 0 34px; color: var(--muted-ink); font-size: 18px; line-height: 1.8; }
 .chapter-link { display: inline-flex; gap: 30px; align-items: center; padding: 16px 22px; background: var(--ink); color: var(--paper); font-size: 14px; }
 .chapter-link > span { font-size: 22px; }
@@ -93,9 +100,17 @@ a:focus-visible { outline: 2px solid currentColor; outline-offset: 6px; }
 .chapter-gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .chapter-gallery-lead { grid-column: 1 / -1; }
 .chapter-preview figcaption { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-top: 17px; color: var(--muted-ink); font-size: 11px; letter-spacing: .025em; }
-.coming-chapter { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 18px; padding-top: 34px; border-top: 1px solid #262c2924; }
-.coming-chapter h2 { margin: 0; font: 400 clamp(30px, 3vw, 44px)/1.2 var(--serif); letter-spacing: -.025em; }
-.coming-chapter p { margin: 0; color: var(--muted-ink); font-size: 13px; }
+.coming-chapter { align-items: center; min-height: 240px; padding-top: clamp(40px, 4vw, 64px); border-top: 1px solid #262c2924; }
+.coming-chapter .chapter-title { margin-bottom: 18px; font-size: clamp(46px, 4.8vw, 76px); }
+.chapter-status { margin: 0; color: var(--muted-ink); font-size: 14px; letter-spacing: .06em; }
+.chapter-continuation { padding: clamp(26px, 3vw, 44px); background: #e5e5da; }
+.chapter-continuation .continuation-title { margin: 0 0 14px; font: 400 clamp(25px, 2.4vw, 36px)/1.25 var(--serif); letter-spacing: -.02em; color: var(--ink); }
+.chapter-continuation p { margin: 0; max-width: 36ch; color: var(--muted-ink); font-size: 14px; line-height: 1.75; }
+@media (min-width:701px) and (max-width:1000px) {
+  .writing-project,.chapter-entry,.coming-chapter { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .chapter-title { font-size: clamp(54px, 8vw, 76px); }
+  .chapter-entry { gap: 36px; }
+}
 @media (max-width: 700px) {
   .portfolio-header { min-height: 80px; padding: 20px 24px; gap: 12px; }
   .portfolio-name { font-size: 18px; }
@@ -109,8 +124,16 @@ a:focus-visible { outline: 2px solid currentColor; outline-offset: 6px; }
   .choice-action { padding-top: 12px; font-size: 12px; }
   .choice-action > span { font-size: 24px; }
   .portfolio-nav { gap: 17px; font-size: 12px; }
-  .writing-main { grid-template-columns: minmax(0, 1fr); min-height: auto; padding: 44px 24px; gap: 40px; }
-  .writing-main h1 { font-size: clamp(60px, 14vw, 86px); }
+  .writing-main { padding: 36px 24px 56px; }
+  .writing-project,.chapter-entry,.coming-chapter { grid-template-columns: minmax(0, 1fr); gap: 26px; }
+  .writing-project { padding-bottom: 32px; }
+  .writing-project .writing-intro { font-size: 15px; }
+  .chapter-entry { padding-block: 40px; gap: 34px; }
+  .chapter-title { font-size: clamp(46px, 13.5vw, 68px); margin-bottom: 26px; }
+  .coming-chapter { min-height: 0; padding-top: 36px; gap: 28px; }
+  .coming-chapter .chapter-title { font-size: clamp(44px, 12vw, 60px); margin-bottom: 14px; }
+  .chapter-continuation { padding: 26px; }
+  .writing-main h1 { font-size: 42px; }
   .writing-intro { font-size: 16px; }
   .chapter-preview figcaption { font-size: 10px; }
 }
