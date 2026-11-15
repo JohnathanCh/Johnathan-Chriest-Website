@@ -1,0 +1,8 @@
+/* Drawn arrows inherit the page ink, never the device's emoji font. */
+.site-icon{display:inline-block;width:1.15em;height:1.15em;flex:none;overflow:visible;vertical-align:-.18em;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+.choice-action>span,.chapter-link>span{display:inline-flex;align-items:center;justify-content:center;line-height:1}
+.choice-action .site-icon{width:25px;height:25px}.chapter-link .site-icon{width:21px;height:21px}
+.nav-home .site-icon{width:16px;height:16px}
+.film-cta .site-icon,.text-link .site-icon,footer .site-icon,.button .site-icon{width:16px;height:16px;vertical-align:-3px}
+.button .site-icon{margin-left:9px}.film-cta>b .site-icon{margin-left:0}
+@media(max-width:700px){.choice-action .site-icon{width:23px;height:23px}.chapter-link .site-icon{width:21px;height:21px}}
