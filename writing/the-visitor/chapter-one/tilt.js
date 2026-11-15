@@ -1,6 +1,6 @@
 import {icon} from './icons.js?v=22';
 import {Euler,Quaternion,Vector3} from 'three';
-import {MOTION} from './motion-config.js?v=16';
+import {MOTION} from './motion-config.js?v=25';
 export const MOBILE_QUERY='(max-width:700px), (pointer:coarse) and (max-width:1100px)';
 const D=Math.PI/180,clamp=(v,n)=>Math.max(-n,Math.min(n,v));
 // Device Z-X-Y rotations mapped to a camera looking through the phone's back.

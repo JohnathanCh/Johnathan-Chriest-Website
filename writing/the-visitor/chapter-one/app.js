@@ -1,23 +1,24 @@
+import {loadingPercent} from './loading-progress.js?v=25';
 import {icon} from './icons.js?v=22';
 import {initMobileUI,MOBILE_QUERY} from './mobile-ui.js?v=8';
-import {initTilt} from './tilt.js?v=22';
+import {initTilt} from './tilt.js?v=25';
 if(!window.visitorStartupTimedOut){
 // The story shell stays independent of WebGL so text and audio survive renderer failures.
 const $=id=>document.getElementById(id);
 const params=new URLSearchParams(location.search);
-const restoredURL=new URL(location.href);restoredURL.searchParams.set('visual','blender');restoredURL.searchParams.set('v','24');history.replaceState(null,'',restoredURL);
+const restoredURL=new URL(location.href);restoredURL.searchParams.set('visual','blender');restoredURL.searchParams.set('v','25');history.replaceState(null,'',restoredURL);
 const state={phase:'arrival',muted:true,reduced:matchMedia('(prefers-reduced-motion: reduce)').matches,quality:'auto',mode:'rendered',fallback:false,ready:false,clarity:1};
 const music=$('music');music.volume=1;music.muted=true;
 const openingFilm=$('opening-film');openingFilm.muted=true;
 
 const ROOM_LOADING_LIMIT_MS=30000;
-let room,openingFrame,openingStarted,returnFocus,localAudioURL,loadController;
+let room,openingFrame,openingStarted,returnFocus,loadController;
 let playerActivated=false;
 let audioPlaying=false,audioWaiting=false,audioFailed=false,hasPlayed=false;
 let filmReady=false,filmMode='idle',filmWatchdog;
 const mobileUI=initMobileUI();
 let tilt,viewControl='arrows';
-function syncViewChoice(){const mobile=mobileUI.media.matches;$('mobile-view-choice').hidden=!mobile;$('mobile-look').hidden=!mobile||viewControl!=='arrows'||state.phase!=='exploring'||state.fallback;$('arrival-motion').disabled=!state.ready||!room||state.reduced||Boolean(tilt?.snapshot().pending);$('arrival-motion').textContent=viewControl==='motion'?'Disable motion':'Enable motion';$('arrival-motion').setAttribute('aria-pressed',String(viewControl==='motion'));$('arrival-arrows').setAttribute('aria-pressed',String(viewControl==='arrows'));$('arrival-motion-setup').hidden=isSecureContext;refreshPlayerDisplay();}
+function syncViewChoice(){const mobile=mobileUI.media.matches;$('mobile-view-choice').hidden=!mobile;$('mobile-look').hidden=!((mobile&&viewControl==='arrows')||state.reduced)||state.phase!=='exploring'||state.fallback;document.body.classList.toggle('desktop-manual',!mobile&&state.reduced);$('arrival-motion').disabled=!state.ready||!room||state.reduced||Boolean(tilt?.snapshot().pending);$('arrival-motion').textContent=viewControl==='motion'?'Disable motion':'Enable motion';$('arrival-motion').setAttribute('aria-pressed',String(viewControl==='motion'));$('arrival-arrows').setAttribute('aria-pressed',String(viewControl==='arrows'));$('arrival-motion-setup').hidden=isSecureContext;refreshPlayerDisplay();}
 function compactMobile(){return mobileUI.media.matches&&viewControl==='arrows';}
 function refreshPlayerDisplay(){$('music-player').hidden=state.phase!=='exploring'||(!playerActivated&&!compactMobile());$('player-toggle').setAttribute('aria-label',`${music.paused||music.ended?'Play':'Pause'} ${$('track-title').textContent}${compactMobile()?' and open music details':''}`);}
 function chooseView(mode){viewControl=mode;document.body.dataset.viewControl=mode;syncViewChoice();}
@@ -31,8 +32,8 @@ window.visitorDebug={state,stats,get room(){return room;},get tilt(){return tilt
 addEventListener('visitor-startup-timeout',()=>{loadController?.abort();stopOpeningFilm();room?.dispose();room=undefined;state.ready=false;});
 
 function toast(message){$('toast').textContent=message;$('toast').hidden=false;clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('toast').hidden=true,5500);}
-function reduced(value){state.reduced=value;$('reduced-motion').checked=value;document.body.classList.toggle('reduce-motion',value);room?.setReducedMotion(value);tilt?.refresh();syncViewChoice();}
-function clarityChanged(progress){state.clarity=progress;if(state.phase!=='exploring')return;$('clear-view').hidden=progress>=1||state.fallback;$('orientation-hint').hidden=state.fallback;$('orientation-hint').style.opacity='1';const mobile=matchMedia(MOBILE_QUERY).matches;$('orientation-hint').textContent=progress<1?'Let your eyes adjust…':mobile?(tilt?.snapshot().enabled?'Turn or tilt your phone to look around':viewControl==='arrows'?'Swipe or use the arrows to look around · Tap Centre to return':'Enable motion in the menu, or drag to look around'):'Move toward either edge for a small glance';if(progress>=1){clearTimeout(clarityChanged.timer);clarityChanged.timer=setTimeout(()=>$('orientation-hint').style.opacity='0',6500);}}
+function reduced(value){state.reduced=value;$('reduced-motion').checked=value;document.body.classList.toggle('reduce-motion',value);room?.setReducedMotion(value);if(value){room?.clearView();tilt?.disable('Automatic motion is off. Drag to look around, or use the arrows.');}tilt?.refresh();syncViewChoice();if(state.phase==='exploring')clarityChanged(state.clarity);}
+function clarityChanged(progress){state.clarity=progress;if(state.phase!=='exploring')return;$('clear-view').hidden=progress>=1||state.fallback;$('orientation-hint').hidden=state.fallback;$('orientation-hint').style.opacity='1';const mobile=matchMedia(MOBILE_QUERY).matches;$('orientation-hint').textContent=progress<1?'Let your eyes adjust…':mobile?(tilt?.snapshot().enabled?'Turn or tilt your phone to look around':viewControl==='arrows'?'Swipe or use the arrows to look around · Tap Centre to return':'Enable motion in the menu, or drag to look around'):state.reduced?'Drag to look around, or use the arrows · Centre returns to the bed view':'Move toward either edge to look around · Move back to the middle to hold your view';if(progress>=1){clearTimeout(clarityChanged.timer);clarityChanged.timer=setTimeout(()=>$('orientation-hint').style.opacity='0',6500);}}
 reduced(state.reduced);chooseView('arrows');
 function enterFallback(message){state.fallback=true;syncViewChoice();$('fallback-note').hidden=state.phase!=='exploring';$('canvas-host').hidden=true;$('poster').hidden=false;$('markers').hidden=true;$('quality').disabled=true;if(message)stats.errors.push(message);}
 function renderChapter(data){const article=$('chapter-text');article.replaceChildren();for(const block of data.blocks||data.paragraphs.map(text=>({type:'paragraph',text}))){if(block.type==='break'){const divider=document.createElement('div');divider.className='scene-break';divider.setAttribute('aria-hidden','true');divider.innerHTML=icon('ornament');article.append(divider);}else{const paragraph=document.createElement('p');paragraph.textContent=block.text;if(block.indented)paragraph.className='chapter-indented';article.append(paragraph);}}}
@@ -73,12 +74,12 @@ async function prepare(){
  try{
   if(controller.signal.aborted)return;
   if(params.has('fallback'))throw new Error('Simple view requested');
-  stage='viewer';const module=await bounded(import('./room.js?v=21'));
+  stage='viewer';const module=await bounded(import('./room.js?v=25'));
   if(controller.signal.aborted)return;
   stage='viewport';await bounded(waitForPreviewSize(controller.signal));
   if(controller.signal.aborted)return;
   room?.dispose();room=undefined;stage='room';
-  const roomCreation=module.createRoom({host:$('canvas-host'),markers:$('markers'),quality:state.quality,signal:controller.signal,onStage:value=>{stage=value;},onProgress:(loaded,total)=>{if(!acceptingProgress||controller.signal.aborted)return;stats.essentialBytes=loaded;$('load-progress').value=total?loaded/total*100:0;$('load-detail').textContent=total?`Preparing room · ${Math.round(loaded/total*100)}%`:'Preparing room…';},onSelect:selectObject,onClarityChange:clarityChanged,onFailure:message=>{if(controller.signal.aborted)return;window.visitorPreviewReport?.('room-failed',{stage:'graphics',message});enterFallback(message);toast('The still room is available. You can continue reading and listening.');}});
+  const roomCreation=module.createRoom({host:$('canvas-host'),markers:$('markers'),quality:state.quality,signal:controller.signal,onStage:value=>{stage=value;if(acceptingProgress&&!controller.signal.aborted&&['room image','notebook','guitar'].includes(value))$('load-detail').textContent='Preparing the room…';},onProgress:(loaded,total)=>{if(!acceptingProgress||controller.signal.aborted)return;stats.essentialBytes=loaded;const percent=loadingPercent(loaded,total);if(percent===null)$('load-progress').removeAttribute('value');else $('load-progress').value=percent;$('load-detail').textContent=percent===null?'Loading room files…':`Loading room files · ${percent}%`;},onSelect:selectObject,onClarityChange:clarityChanged,onFailure:message=>{if(controller.signal.aborted)return;window.visitorPreviewReport?.('room-failed',{stage:'graphics',message});enterFallback(message);toast('The still room is available. You can continue reading and listening.');}});
   // An image decoder or model parser may finish after its deadline; retire that
   // late renderer rather than letting it replace the already available fallback.
   roomCreation.then(candidate=>{if(controller.signal.aborted)retireCandidate(candidate);},()=>{});
@@ -97,11 +98,12 @@ async function prepare(){
  state.ready=true;$('awaken').disabled=false;$('awaken').firstElementChild.textContent='Awaken';$('load-progress').value=100;$('load-detail').textContent=state.fallback?(params.has('fallback')?'Simple view ready':'Room unavailable · simple view ready'):'The room is ready';
  document.documentElement.dataset.visitorReady='true';syncViewChoice();
 }
-function setSound(on){state.muted=!on;music.muted=!on;$('sound-toggle').textContent=on?'Sound on':'Sound off';$('sound-toggle').setAttribute('aria-pressed',String(on));$('mute').textContent=on?'Mute':'Muted';$('mute').setAttribute('aria-pressed',String(!on));syncPlay();}
+function setSound(on){state.muted=!on;music.muted=!on;$('mute').textContent=on?'Mute':'Muted';$('mute').setAttribute('aria-pressed',String(!on));syncPlay();}
 function activatePlayer(){playerActivated=true;document.body.dataset.playerActive='true';refreshPlayerDisplay();}
-async function playMusic(){activatePlayer();audioFailed=false;setSound(true);try{await music.play();$('audio-status').textContent='Playing · '+$('track-title').textContent;}catch(e){audioWaiting=false;audioFailed=true;syncPlay();$('audio-status').textContent='Audio could not play. Retry, or choose a local audio file below.';toast('Audio could not play. Tap the song title for audio options.');stats.errors.push(e.message);}}
+async function playMusic(){activatePlayer();audioFailed=false;setSound(true);try{await music.play();$('audio-status').textContent='Playing · '+$('track-title').textContent;}catch(e){audioWaiting=false;audioFailed=true;syncPlay();$('audio-status').textContent='Audio could not play. Please try Play again.';toast('Audio could not play. Open Listen and try Play again.');stats.errors.push(e.message);}}
 function syncPlay(){
  const active=!music.paused&&!music.ended;
+ $('sound-toggle').textContent=active?'Sound off':'Sound on';$('sound-toggle').setAttribute('aria-label',active?'Pause music':'Play music');$('sound-toggle').setAttribute('aria-pressed',String(active));
  const audible=active&&audioPlaying&&!audioWaiting&&!audioFailed&&!music.muted&&music.volume>0;
  const title=$('track-title').textContent;
  const status=audioFailed?'Unable to play':music.ended?'Finished':active&&audioWaiting?'Loading…':active&&(music.muted||music.volume===0)?'Muted':audible?'Playing':active?'Loading…':hasPlayed?'Paused':'Ready to play';
@@ -131,7 +133,7 @@ function syncPosition(){
  $('track-time').textContent=label;$('player-time').textContent=label;
 }
 for(const event of ['loadedmetadata','durationchange','timeupdate','seeked','emptied'])music.addEventListener(event,syncPosition);
-music.addEventListener('error',()=>{audioPlaying=false;audioWaiting=false;audioFailed=true;syncPlay();$('audio-status').textContent='The audio file is unavailable. Retry Play, or choose a file below.';stats.errors.push('Audio unavailable');});
+music.addEventListener('error',()=>{audioPlaying=false;audioWaiting=false;audioFailed=true;syncPlay();$('audio-status').textContent='The audio file is unavailable. Please try Play again.';stats.errors.push('Audio unavailable');});
 $('play').onclick=()=>music.paused?playMusic():music.pause();
 function toggleMusic(){activatePlayer();if(music.paused)playMusic();else music.pause();}
 $('player-toggle').onclick=()=>{toggleMusic();if(compactMobile())openPanel('listen');};
@@ -143,8 +145,8 @@ syncPosition();
 $('volume').style.setProperty('--range-progress',`${music.volume*100}%`);
 $('volume').oninput=e=>{music.volume=Number(e.target.value);e.target.style.setProperty('--range-progress',`${music.volume*100}%`);setSound(music.volume>0);};
 $('mute').onclick=() =>setSound(state.muted);
-$('sound-toggle').onclick=()=>{setSound(state.muted);if(!state.muted&&music.paused)playMusic();};
-$('local-audio').onchange=e=>{const file=e.target.files[0];if(!file)return;music.pause();if(localAudioURL)URL.revokeObjectURL(localAudioURL);localAudioURL=URL.createObjectURL(file);music.src=localAudioURL;$('track-title').textContent=file.name;$('track-credit').textContent='Local audio · only on this device';$('track-description').textContent='Your selected audio plays only on this device. Listen alongside the room or Chapter One, and use the controls below to find your place.';syncPlay();playMusic();};
+$('sound-toggle').onclick=()=>music.paused?playMusic():music.pause();
+
 syncPlay();
 
 function setEyelidOpening(value){const open=Math.max(0,Math.min(1,value));$('eyelids').style.setProperty('--open',open);for(const [i,lid] of [...$('eyelids').children].entries())lid.style.transform=`translate3d(0,${(i===0?-1:1)*open*100}%,0)`;}
