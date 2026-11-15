@@ -38,3 +38,12 @@ summary{display:flex;align-items:center;justify-content:space-between;gap:16px;l
 #chapter-text>button{font:12px var(--sans);padding:12px 18px;border:1px solid #8e9f85;border-radius:24px;background:#e7ecdf;color:var(--ink)}
 
 .loading-row progress{appearance:none;-webkit-appearance:none;overflow:hidden;border:0;border-radius:2px;background:#e3e9d52e}.loading-row progress::-webkit-progress-bar{background:#e3e9d52e;border-radius:2px}.loading-row progress::-webkit-progress-value{background:#b8cba6;border-radius:2px}.loading-row progress::-moz-progress-bar{background:#b8cba6;border-radius:2px}.tilt-controls a{font:10px/1.5 var(--sans);color:#d9e4cd;text-decoration:underline;text-underline-offset:4px;padding:8px 5px}
+
+/* Quiet, book-like chapter layout: preserve the author's paragraphs and breaks. */
+#reader-title{font-size:clamp(29px,4.2vw,36px);line-height:1.2;letter-spacing:-.03em;text-wrap:balance}
+#chapter-text{font-size:20px;line-height:1.85;letter-spacing:.005em;color:#171b18;background:#fff}
+#chapter-text p{max-width:66ch;margin:0 auto 1.35em;text-wrap:pretty;orphans:3;widows:3}
+#chapter-text .scene-break{margin:22px auto 26px}
+@media(max-width:700px){#chapter-text{font-size:18px;line-height:1.85}#reader-title{font-size:29px}#listen h2{font-size:30px;line-height:1.15;text-wrap:balance}}
+
+.chapter-heading-prefix,.chapter-heading-name{display:inline-block;white-space:nowrap}

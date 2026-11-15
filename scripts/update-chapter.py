@@ -22,7 +22,7 @@ def regenerate():
         while lines and not lines[-1].strip(): lines.pop()
         if lines and lines[-1].strip() == str(number): lines.pop()
         while lines and not lines[0].strip(): lines.pop(0)
-        if number == 1 and lines and re.fullmatch(r'Chapter\s+\S+', lines[0].strip(), re.I):
+        if number == 1 and lines and re.fullmatch(r'Chapter\s+\S+(?:\s*-\s*.+)?', lines[0].strip(), re.I):
             printed_heading = lines.pop(0).strip()
         cleaned.append('\n'.join(lines).strip('\n'))
     text = '\n'.join(cleaned).strip()
@@ -41,7 +41,7 @@ def regenerate():
     if normal(' '.join(paragraphs)) != normal(text.replace('❖', '')):
         raise SystemExit('Text verification failed; source PDF was left untouched.')
     digest = hashlib.sha256(PDF.read_bytes()).hexdigest()
-    data = {'title':'Waking Up', 'chapter':1, 'source':'chapter-one.pdf', 'sourceSha256':digest,
+    data = {'title':'Chapter One - Waking Up', 'chapter':1, 'source':'chapter-one.pdf', 'sourceSha256':digest,
             'printedHeading':printed_heading, 'blocks':blocks, 'paragraphs':paragraphs}
     target = CHAPTER / 'assets/chapter.json'
     target.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n')
@@ -50,7 +50,7 @@ def regenerate():
     index.write_text(html)
     print(f'Updated {len(paragraphs)} paragraphs and {sum(b["type"] == "break" for b in blocks)} source separators.')
     print('PDF preserved. SHA-256: '+digest)
-    if printed_heading and printed_heading != 'Chapter One':
+    if printed_heading and printed_heading != 'Chapter One - Waking Up':
         print('Note: the PDF prints "'+printed_heading+'"; the website still labels this entry Chapter One.')
 
 if __name__ == '__main__': regenerate()

@@ -5,9 +5,9 @@ if(!window.visitorStartupTimedOut){
 // The story shell stays independent of WebGL so text and audio survive renderer failures.
 const $=id=>document.getElementById(id);
 const params=new URLSearchParams(location.search);
-const restoredURL=new URL(location.href);restoredURL.searchParams.set('visual','blender');restoredURL.searchParams.set('v','22');history.replaceState(null,'',restoredURL);
+const restoredURL=new URL(location.href);restoredURL.searchParams.set('visual','blender');restoredURL.searchParams.set('v','23');history.replaceState(null,'',restoredURL);
 const state={phase:'arrival',muted:true,reduced:matchMedia('(prefers-reduced-motion: reduce)').matches,quality:'auto',mode:'rendered',fallback:false,ready:false,clarity:1};
-const music=$('music');music.volume=.45;music.muted=true;
+const music=$('music');music.volume=1;music.muted=true;
 const openingFilm=$('opening-film');openingFilm.muted=true;
 
 const ROOM_LOADING_LIMIT_MS=30000;
